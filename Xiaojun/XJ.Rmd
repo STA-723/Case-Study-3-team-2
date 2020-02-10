@@ -3,6 +3,8 @@ title: "XJ"
 output: html_document
 ---
 
+### load in data
+
 ```{r}
 data_format <- dataset <- read_csv("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/Harvard_CAS_1993/DS0001/Data_Format_93.csv")
 
@@ -24,4 +26,44 @@ data_format <- dataset <- read_csv("C:/Users/XJ/OneDrive - Duke University/STA-7
 
 dat01 = read.fwf("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/Harvard_CAS_2001/DS0001/04291-0001-Data.txt", widths=data_format$Col_Width, na.strings=c("NA", " ", "."), col.names = paste0(data_format$Name) )
 save(dat01, file="data_2001.rdata")
+```
+
+--------------------- No need to run lines above
+
+```{r message=FALSE,warning=FALSE}
+library(readr)
+library(visdat)
+library(ggpubr)
+library(naniar)
+library(dplyr)
+library(corrplot)
+library(ggplot2)
+library(ggthemes)
+library(wordcloud)
+library(BAS)
+library(MASS)
+library(wordcloud2)
+load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_1993.rdata")
+load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_1997.rdata")
+load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_1999.rdata")
+load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_2001.rdata")
+```
+
+### EDA (start with 93)
+
+```{r}
+dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, C1_B, C7, C8, E1_A, E1_M, F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15))
+```
+
+### Modeling
+
+## whether or not to use offset
+## poisson distribution, truncated?
+## dont know the student ID, so hard to do time series problem
+## find proxy for heavy drinking (# drinks per month?)
+## missing values could be found in codebook
+
+```{r}
+#fit3<- glm(cigarettes~ place, family=poisson)
+
 ```
