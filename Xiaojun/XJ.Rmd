@@ -42,7 +42,7 @@ library(ggthemes)
 library(wordcloud)
 library(BAS)
 library(MASS)
-library(wordcloud2)
+library(ggmosaic)
 load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_1993.rdata")
 load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_1997.rdata")
 load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_1999.rdata")
@@ -52,8 +52,96 @@ load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/data_20
 ### EDA (start with 93)
 
 ```{r}
-dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, C1_B, C7, C8, E1_A, E1_M, F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15))
+dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, C1_B, C7, C8, C9, E1_A, E1_M, F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15))
+save(dat93_subset, file="data93_subset.rdata")
 ```
+
+### missing data and data cleaning
+------------------------------------------------
+### age, maybe not using this in the model, cuz year in school tells all
+### gender 37 missing
+### year in school 56 missing
+### transfer 47 missing
+### where live 57 missing
+### whom live 57 missing
+### major 178 missing
+### frat or soro member 59 missing
+### academic importance 92 missing
+### religion importance 111 missing
+### prohibit drinking health 206 missing
+### prohibit drinking religious 201 missing
+----------------------------------------------
+c7-c9, missing might be never drinking, then change missing to 0
+-----------------------------------------
+### drug use:marijuana 58 missing
+### drug use:cigarettes 77 missing
+### GPA 69 missing
+---------------------------------- ALL G's 
+### marital status 86 missing
+### span/hispanic 115 missing
+### race 222 missing
+### religion 174 missing
+### health status 96 missing
+### weight 222 missing
+### height 337 missing 
+### last year freq 150 missing
+### last year quantity 113 missing
+### binge 109 missing
+### father alcohol use 214 missing
+### mother alcohol use 157 missing
+### family attitude 126 missing
+### father's edu 50 missing
+### mother's edu 41 missing
+
+110 page
+
+```{r}
+dat93_subset$A2<- as.factor(dat93_subset$A2)
+dat93_subset$A3<- as.factor(dat93_subset$A3)
+dat93_subset$A4<- as.factor(dat93_subset$A4)
+dat93_subset$A5<- as.factor(dat93_subset$A5)
+dat93_subset<- ifelse(dat93_subset$A6 > 5, 6, dat93_subset$A6) ### who are you currently living with? (6 indicates others)
+dat93_subset$A6<- as.factor(dat93_subset$A6)
+dat93_subset$A7<- as.factor(dat93_subset$A7)
+dat93_subset$A8<- as.factor(dat93_subset$A8)
+dat93_subset$A9_C<- as.factor(dat93_subset$A9_C)
+dat93_subset$A9_E<- as.factor(dat93_subset$A9_E)
+dat93_subset$C1_A<- as.factor(dat93_subset$C1_A)
+dat93_subset$C1_B<- as.factor(dat93_subset$C1_B)
+# ------------------------------------------
+dat93_subset$C7[is.na(dat93_subset$C7)] = 0
+dat93_subset$C7<- as.factor(dat93_subset$C7)
+dat93_subset$C8[is.na(dat93_subset$C8)] = 0
+dat93_subset$C8<- as.factor(dat93_subset$C8)
+dat93_subset$C9[is.na(dat93_subset$C9)] = 0
+dat93_subset$C9<- as.factor(dat93_subset$C9)
+# -----------------------------------------
+dat93_subset$E1_A<- as.factor(dat93_subset$E1_A)
+dat93_subset$E1_M<- as.factor(dat93_subset$E1_M)
+dat93_subset$F5<- as.factor(dat93_subset$F5)
+
+dat93_subset$G1<- as.factor(dat93_subset$G1)
+dat93_subset$G2<- as.factor(dat93_subset$G2)
+dat93_subset$G3<- as.factor(dat93_subset$G3)
+dat93_subset$G4<- as.factor(dat93_subset$G4)
+dat93_subset$G5<- as.factor(dat93_subset$G5)
+dat93_subset$G8<- as.factor(dat93_subset$G8)
+dat93_subset$G9<- as.factor(dat93_subset$G9)
+dat93_subset$G10<- as.factor(dat93_subset$G10)
+dat93_subset$G11<- as.factor(dat93_subset$G11)
+dat93_subset$G12<- as.factor(dat93_subset$G12)
+
+163
+
+### c7, fequency 30 days, could do classification, and take c9 into account, then we could create our own variable saying that the ratio of drunk
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(as.factor(A1), as.factor(C7)), fill=A1), na.rm=TRUE)+
+  labs(x = "Center ID", y = "Race", title='Race by center')
+
+dat93_subset$F5<- as.factor(dat93_subset$F5)```
+```
+
 
 ### Modeling
 
