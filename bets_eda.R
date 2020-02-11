@@ -17,7 +17,7 @@ dim(dat01)
 ## and cbind all to have more data
 
 # load in 93 subsetted data
-dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, C1_B, C7, C8, E1_A, E1_B,E1_C,E1_D,E1_E,E1_F,E1_G,E1_H,E1_I,E1_J,E1_K,E1_L, E1_M, F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15))
+dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, C1_B, C7, C8, D5, E1_A, E1_B,E1_C,E1_D,E1_E,E1_F,E1_G,E1_H,E1_I,E1_J,E1_K,E1_L, E1_M, F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15))
 df = dat93_subset
 
 
@@ -39,7 +39,7 @@ for (j in 1:length(mean_ranges)){
 }
 
 df$num_of_drinks = df$C7 * df$C8 # maybe need to round up to be whole number
-
+# MAYBE CHECK WITH C6
 
 # Missing Data
 colSums(is.na(df))
@@ -50,7 +50,11 @@ df = df[-unique(loc_missing),]
 
 ## Handle As
 # rename
-df$age = df$A1
+df$age_15_17 = ifelse(df$A1==15|df$A1==16|df$A1==17,1,0)
+df$age_18_20 = ifelse(df$A1==18|df$A1==19|df$A1==20,1,0)
+df$age_21_22 = ifelse(df$A1==21|df$A1==22,1,0)
+df$age_23up = ifelse(df$A1==23|df$A1==24|df$A1==25|df$A1==26,1,0)
+
 # change gender to 0,1
 df$gender = ifelse(df$A2==2,1,0)
 # 0,1 for transfer
@@ -71,22 +75,20 @@ drugs_loc2 = which(colnames(df)=="E1_K")
 df$hard_drugs = ifelse(rowSums(df[,drugs_loc1:drugs_loc2]==4)>=1,1,0)
 
 ## Handle Gs
-df$single = ifelse(df$G1==1,1,0)
+df$single = ifelse(df$G1==1&df$D5==2,1,0)
+df$relationship = ifelse(df$G1==1&df$D5==1,1,0)
 df$married = ifelse(df$G1==2,1,0)
-df$divorced = ifelse(df$G1==3,1,0)
-df$separated = ifelse(df$G1==4,1,0)
-df$widowed = ifelse(df$G1==5,1,0)
+df$div_sep_wid = ifelse(df$G1==3|df$G1==4|df$G1==5,1,0)
 
 df$hispanic = ifelse(df$G2==1,1,0)
-df$white = ifelse(df$G3==1,1,0)
-df$black = ifelse(df$G3==2,1,0)
-df$asian = ifelse(df$G3==3,1,0)
-df$native = ifelse(df$G3==4,1,0)
-df$other = ifelse(df$G3==5,1,0)
+df$white = ifelse(df$G3==1&df$G2==2,1,0)
+df$black = ifelse(df$G3==2&df$G2==2,1,0)
+df$asian = ifelse(df$G3==3&df$G2==2,1,0)
+df$native = ifelse(df$G3==4&df$G2==2,1,0)
+df$other = ifelse(df$G3==5&df$G2==2,1,0)
 
 df$raised_religous = ifelse(df$G4!=1,1,0)
 
-df$healthy_now = ifelse(df$G5==1|df$G5==2|df$G5==3,1,0)
 
 df$weight = df$G6
 range(df$G6)
@@ -105,7 +107,8 @@ for (j in 1:10){
 
 df$HS_num_of_drinks = df$G8 * df$G9 # maybe need to round up to be whole number
 
-df$parent_heavy_drinker = ifelse(df$G11==5|df$G11==6|df$G12==5|df$G12==6,1,0)
+df$mom_heavy_drinker = ifelse(df$G12==5|df$G12==6,1,0)
+df$dad_heavy_drinker = ifelse(df$G11==5|df$G11==6,1,0)
 
 # create max parent education variable
 # set unknowns to 0
