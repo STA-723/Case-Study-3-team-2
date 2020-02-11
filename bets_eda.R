@@ -17,7 +17,7 @@ dim(dat01)
 ## and cbind all to have more data
 
 # load in 93 subsetted data
-dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, C1_B, C7, C8, D5, E1_A, E1_B,E1_C,E1_D,E1_E,E1_F,E1_G,E1_H,E1_I,E1_J,E1_K,E1_L, E1_M, F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15))
+dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, C1_B, C6, C7, C8, D5, E1_A, E1_B,E1_C,E1_D,E1_E,E1_F,E1_G,E1_H,E1_I,E1_J,E1_K,E1_L, E1_M, F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15))
 df = dat93_subset
 
 
