@@ -70,12 +70,12 @@ df$year_in_school = df$A3
 # where do you live
 df$subfree_on_housing = ifelse(df$D4 != 1,1,0)
 df$on_housing = ifelse((df$A5==1|df$A5==2|df$A5==4|df$A5==5)&df$D4==1,1,0)
-df$off_housing = ifelse(df$A5==3|df$A5==6,1,0)
+df$off_housing = ifelse((df$A5==3|df$A5==6)&df$D4==1,1,0)
 
 # who do you liv with
 df$no_roommate = ifelse(df$A6==1,1,0)
 df$roommate = ifelse(df$A6==2,1,0)
-df$weird_roomate = ifelse(df$A6==3|df$A6==4|df$A6==5|df$A6==6,1,0)
+df$weird_roomate = ifelse(df$A6==3|df$A6==4|df$A6==5|df$A6>=6,1,0)
 
 # 0,1 for frat
 df$greek = ifelse(df$A8==1,1,0)
@@ -121,11 +121,10 @@ gpa_value = seq(from= 1, to = 4, by = .3333333)
 # no D+
 gpa_value = gpa_value[-2]
 gpa_value = rev(gpa_value)
-grades = c("A","A-","B+","B","B-","C+","C","C-","D")
-for (j in 1:length(grades)){
-  df$F5[df$F5==grades[j]]=gpa_value[j]
+df$gpa = df$F5
+for (j in 1:9){
+  df$gpa[df$F5==j]=gpa_value[j]
 }
-
 
 #########################################
 
@@ -161,16 +160,18 @@ range(df$G7)
 df$height = df$G7
 
 # create hs drinking metric
-df$G8[df$G8==0] = 1
+drinking_temp = df$G8
+drinking_temp[df$G8==1] = 0
 for (j in 1:length(mean_ranges)){
-  df$G8[df$G8==(j+1)] = mean_ranges[j+1]
+  drinking_temp[df$G8==(j+1)] = mean_ranges[j]
 }
 
+occasions_temp = df$G9
 for (j in 1:10){
-  df$G9[df$G9==j]=j-1
+  occasions_temp[df$G9==j]=j-1
 }
 
-df$HS_num_of_drinks = df$G8 * df$G9 # maybe need to round up to be whole number
+df$HS_num_of_drinks = drinking_temp * occasions_temp # maybe need to round up to be whole number
 
 df$mom_heavy_drinker = ifelse(df$G12==7|df$G12==6,1,0)
 df$dad_heavy_drinker = ifelse(df$G11==7|df$G11==6,1,0)
