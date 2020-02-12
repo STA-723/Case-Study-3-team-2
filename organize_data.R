@@ -47,7 +47,7 @@ colSums(is.na(df))
 df$F5[df$F5==10] = NA
 
 # mice missing
-imp = mice(df,m=3)
+imp = mice(df,m=3, method = "pmm")
 df = mice::complete(imp)
 
 
@@ -190,4 +190,4 @@ df$max_parent_edu_col = ifelse(max_parent_edu==4,1,0)
 ## drop all original variables
 G15_loc = which(colnames(df)=="G15")
 df = df[,-c(1:G15_loc)]
-
+save(df, file="df.rdata")
