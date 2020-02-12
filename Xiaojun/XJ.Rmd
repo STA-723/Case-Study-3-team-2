@@ -265,18 +265,19 @@ df_simple$subfree_on_housing<- df$subfree_on_housing
 df_simple$on_housing<- df$on_housing
 df_simple$off_housing<- df$off_housing
 
-#df_simple$housing<- factor(as.matrix(df[,c(9:11)])%*% 1:3, labels = colnames(df[,c(9:11)]))
+df_simple$housing<- factor(as.matrix(df[,c(9:11)])%*% 1:3, labels = colnames(df[,c(9:11)]))
 
-df[, -(df$no_roommate + df$roommate + df$weird_roomate == 0)]
-#df_simple$roommate<- factor(as.matrix(df[,c(12:14)])%*% 1:3, labels = colnames(df[,c(12:14)]))
+#df[, -(df$no_roommate + df$roommate + df$weird_roomate == 0)]
+df_simple$roommate<- factor(as.matrix(df[,c(12:14)])%*% 1:3, labels = colnames(df[,c(12:14)]))
 
 df_simple<- cbind(df_simple, df[,15:23])
 df_simple$happy<- factor(as.matrix(df[,c(24:26)])%*% 1:3, labels = colnames(df[,c(24:26)]))
-df_simple$marital<- factor(as.matrix(df[,c(27:30)])%*% 1:4, labels = colnames(df[,c(27:30)]))
-df_simple$race<- factor(as.matrix(df[,c(31:36)])%*% 1:6, labels = colnames(df[,c(31:36)]))
-df_simple$religion<- factor(as.matrix(df[,c(37:42)])%*% 1:6, labels = colnames(df[,c(37:42)]))
-df_simple<- cbind(df_simple, df[,43:47])
-#df_simple$max_par_edu<- factor(as.matrix(df[,c(48:50)])%*% 1:3, labels = colnames(df[,c(48:50)]))
+df_simple$gpa<- df$gpa
+df_simple$marital<- factor(as.matrix(df[,c(28:31)])%*% 1:4, labels = colnames(df[,c(28:31)]))
+df_simple$race<- factor(as.matrix(df[,c(32:37)])%*% 1:6, labels = colnames(df[,c(32:37)]))
+df_simple$religion<- factor(as.matrix(df[,c(38:43)])%*% 1:6, labels = colnames(df[,c(38:43)]))
+df_simple<- cbind(df_simple, df[,44:48])
+df_simple$max_par_edu<- factor(as.matrix(df[,c(49:53)])%*% 1:5, labels = colnames(df[,c(49:53)]))
 ```
 
 
@@ -304,9 +305,11 @@ fit <- bayesglm(df_simple_bayes[,1] ~ ., data=df_simple_bayes, family="binomial"
 summary(fit)
 
 library(glmnet)
-x <- model.matrix(df_simple[,1]~., df_simple)[,-1]
+df_simple_glmnet<- as.data.frame(df_simple[,-2])
+x <- as.matrix(df_simple_glmnet[,-1])
+x <- model.matrix( ~ -1+., df_simple_glmnet[,-1])
 # Convert the outcome (class) to a numerical variable
-y <- df_simple[,1]
+y <- df_simple_glmnet[,1]
 
 cv.lasso <- cv.glmnet(x, y, alpha = 1)
 plot(cv.lasso)
@@ -320,10 +323,21 @@ coef(model)
 ### negative binomial regression
 
 ```{r}
-df_nb_true0<- rbind(df_simple[(df_simple$num_of_drinks ==0 & df_simple$df.drinks_binary ==0), ], df_simple[(df_simple$num_of_drinks !=0 & df_simple$df.drinks_binary !=0), ])
-df_nb_true0$num_drink_true0<- ceiling(df_nb_true0$num_drink_true0)
+#### only including the true zeros and nonzeros
+#df_nb_true0<- rbind(df_simple[(df_simple$num_of_drinks ==0 & df_simple$df.drinks_binary ==0), ], df_simple[(df_simple$num_of_drinks !=0 & df_simple$df.drinks_binary !=0), ]) 
 
-vglm(formula = df_simple$num_drink_true0 ~ df_simple[,3:], family = posnegbinomial(), data = df_nb_true0)
+df_nb_true0<- df_simple[(df_simple$num_of_drinks !=0 & df_simple$df.drinks_binary !=0),]
+
+df_nb_true0$num_of_drinks<- ceiling(as.numeric(df_nb_true0$num_of_drinks))
+hist(df_nb_true0$num_of_drinks)
+mean(df_nb_true0$num_of_drinks); var(df_nb_true0$num_of_drinks)
+### Since variance is a lot larger than mean, we use negative binomial model
+
+library(VGAM)
+df_nb_true0_all<- df_nb_true0[,-1]
+fit_nb<- vglm(formula = df_nb_true0_all$num_of_drinks ~., family = posnegbinomial(), 
+              data = df_nb_true0_all)
+summary(fit_nb)
 
 round(exp(coef(m2)),3)
 
