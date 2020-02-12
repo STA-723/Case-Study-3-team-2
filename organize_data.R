@@ -16,7 +16,7 @@ df = dat93_subset
 df$drinks_binary = ifelse(df$C6==1,0,1)
 
 # remove missing C6 values- 40 values
-df = df[-is.na(df$C6),]
+df = df[!is.na(df$C6),]
 
 # remove mis matched missing for C7, C8- 35 values
 notmatching = which((!is.na(df$C8)&is.na(df$C7))|(is.na(df$C8)&!is.na(df$C7)))
