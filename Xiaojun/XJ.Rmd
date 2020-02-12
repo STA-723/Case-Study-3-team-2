@@ -93,14 +93,12 @@ c7-c9, missing might be never drinking, then change missing to 0
 ### father's edu 50 missing
 ### mother's edu 41 missing
 
-110 page
-
 ```{r}
 dat93_subset$A2<- as.factor(dat93_subset$A2)
 dat93_subset$A3<- as.factor(dat93_subset$A3)
 dat93_subset$A4<- as.factor(dat93_subset$A4)
 dat93_subset$A5<- as.factor(dat93_subset$A5)
-dat93_subset<- ifelse(dat93_subset$A6 > 5, 6, dat93_subset$A6) ### who are you currently living with? (6 indicates others)
+dat93_subset$A6<- ifelse(dat93_subset$A6 > 5, 6, dat93_subset$A6) ### who are you currently living with? (6 indicates others)
 dat93_subset$A6<- as.factor(dat93_subset$A6)
 dat93_subset$A7<- as.factor(dat93_subset$A7)
 dat93_subset$A8<- as.factor(dat93_subset$A8)
@@ -130,16 +128,140 @@ dat93_subset$G9<- as.factor(dat93_subset$G9)
 dat93_subset$G10<- as.factor(dat93_subset$G10)
 dat93_subset$G11<- as.factor(dat93_subset$G11)
 dat93_subset$G12<- as.factor(dat93_subset$G12)
-
-163
+dat93_subset$G13<- as.factor(dat93_subset$G13)
+dat93_subset$G14<- as.factor(dat93_subset$G14)
+dat93_subset$G15<- as.factor(dat93_subset$G15)
 
 ### c7, fequency 30 days, could do classification, and take c9 into account, then we could create our own variable saying that the ratio of drunk
 
 ggplot(data = dat93_subset) +
-   geom_mosaic(aes(x = product(as.factor(A1), as.factor(C7)), fill=A1), na.rm=TRUE)+
-  labs(x = "Center ID", y = "Race", title='Race by center')
+   geom_mosaic(aes(x = product(A2, C7), fill=A2), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "Gender")
 
-dat93_subset$F5<- as.factor(dat93_subset$F5)```
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A3, C7), fill=A3), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "Year in school")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A4, C7), fill=A4), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "tansfer")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A5, C7), fill=A5), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "where live")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A6, C7), fill=A6), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "whom live")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A7, C7), fill=A7), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "major")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A8, C7), fill=A8), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "frat or soro member")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A9_C, C7), fill=A9_C), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "importance of academic work")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(A9_E, C7), fill=A9_E), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "importance of religion")
+
+# ------------------------------------------
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(C1_A, C7), fill=C1_A), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "prohibit drinking health")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(C1_B, C7), fill=C1_B), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "prohibit drinking religion")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(E1_A, C7), fill=E1_A), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "drug use:marijuana")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(E1_M, C7), fill=E1_M), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "drug use:cigarettes")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(F5, C7), fill=F5), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "gpa")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G1, C7), fill=G1), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "marital status")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G2, C7), fill=G2), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "span/hispanic")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G3, C7), fill=G3), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "race")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G4, C7), fill=G4), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "religion")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G5, C7), fill=G5), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "health status")
+
+ggplot(dat93_subset, aes(x = C7, y = G6)) +
+geom_boxplot() + coord_flip() ### interaction with gender
+
+ggplot(dat93_subset, aes(x = C7, y = G7)) +
+geom_boxplot() + coord_flip()
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G8, C7), fill=G8), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "last year freq")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G9, C7), fill=G9), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "last year quantity")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G10, C7), fill=G10), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "binge")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G11, C7), fill=G11), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "father alcohol use")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G12, C7), fill=G12), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "mother alcohol use")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G13, C7), fill=G13), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "family attitude")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G14, C7), fill=G14), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "father's edu")
+
+ggplot(data = dat93_subset) +
+   geom_mosaic(aes(x = product(G15, C7), fill=G15), na.rm=TRUE)+
+  labs(x = "Freq 30 days", y = "mother's edu")
+
+```
+
+```{r}
+save(df, file="df.rdata")
+
+df_simple<- data.frame()
+
+
+library(tidyverse)
+library(dplyr)
+gather(df, age, val, age_15_17:age_23up) %>% 
+       filter(val!=0) %>%
+       select(-val)
 ```
 
 
@@ -152,6 +274,20 @@ dat93_subset$F5<- as.factor(dat93_subset$F5)```
 ## missing values could be found in codebook
 
 ```{r}
-#fit3<- glm(cigarettes~ place, family=poisson)
+library(BMA)
+#glm_0<- bic.glm(df[,-c(1,2)], df[,1], glm.family="binomial", factor.type=FALSE)
+
+summary(glm.out.FT)
+imageplot.bma(glm.out.FT)
+
+library(arm)
+fit <- bayesglm(df[,1] ~ df[,-c(1,2)], data=df, family="binomial")
+
+library(glmnet)
+fit2=glmnet(df[,-c(1,2)],df[,1],family="binomial")
+
+df_binary<- df[,-2]
+glm_model <- glm(df$drinks_binary~ .,data = df_binary, family = binomial)
+summary(glm_model)
 
 ```
