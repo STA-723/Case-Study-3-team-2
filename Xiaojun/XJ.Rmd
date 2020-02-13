@@ -249,6 +249,12 @@ ggplot(data = dat93_subset) +
    geom_mosaic(aes(x = product(G15, C7), fill=G15), na.rm=TRUE)+
   labs(x = "Freq 30 days", y = "mother's edu")
 
+### hist for num of drinking
+### mean and variance
+### correlation plot
+### maybe use num drinking as response and replot the mosiac
+
+
 ```
 
 ```{r}
@@ -304,7 +310,10 @@ des_mat<- as.data.frame(des_mat)
 mylogit <- glm(formula = drinks_binary ~., data = des_mat, family = "binomial")
 summary(mylogit)
 exp(coef(mylogit))
-
+### ------------------------------stepwise logistic (maybe variable selection)
+library(dplyr)
+model_stepwise <- glm(formula = drinks_binary ~., data = des_mat, family = "binomial") %>% stepAIC(trace = FALSE)
+summary(model_stepwise)
 #---------------------------BMA (giving me error)
 #glm_0<- bic.glm(df_simple[,-c(1,2)], df_simple[,1], glm.family="binomial", factor.type=FALSE)
 #summary(glm_0)
@@ -345,6 +354,7 @@ mean(df_nb_true0$num_of_drinks); var(df_nb_true0$num_of_drinks)
 #----------------------------------------
 
 #---------------------------------If using the indicator dataset
+load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/df.rdata")
 df_nb_true0<- df[(df$num_of_drinks !=0 & df$drinks_binary !=0),]
 
 df_nb_true0$num_of_drinks<- ceiling(as.numeric(df_nb_true0$num_of_drinks))
@@ -366,9 +376,19 @@ library(MASS)
 fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0_all,link = log)
 summary(fit_nb)
 round(exp(coef(fit_nb)),3)
+
+list(residual.deviance= deviance(fit_nb),
+     residual.degrees.of.freedom = df.residual(fit_nb),
+     chisq.p.value= pchisq(deviance(fit_nb), df.residual(fit_nb), lower = F)
+     )
+
+### pvalue pretty small
+
 #------------------- Using factored data
 fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0,link = log)
 summary(fit_nb)
+
+##gof ... 
 #df_simple$num_drink_true0<- ifelse(df_simple$num_of_drinks ==0 & df_simple$df.drinks_binary ==0, 0, df_simple$num_of_drinks)
 
 ```
