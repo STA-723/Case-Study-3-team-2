@@ -293,54 +293,82 @@ df_simple$max_par_edu<- factor(as.matrix(df[,c(49:53)])%*% 1:5, labels = colname
 ## Logistic regression on people who never drink
 
 ```{r}
+load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/df.rdata")
 library(BMA)
-glm_0<- bic.glm(df_simple[,-c(1,2)], df_simple[,1], glm.family="binomial", factor.type=FALSE)
+df<- df[,-2]
+des_mat = model.matrix(lm(drinks_binary ~ ., data = df))
+des_mat<- des_mat[,-1]
+des_mat<- cbind(drinks_binary = df$drinks_binary, des_mat)
+des_mat<- as.data.frame(des_mat)
+###---------------------------- normal logistic regression
+mylogit <- glm(formula = drinks_binary ~., data = des_mat, family = "binomial")
+summary(mylogit)
+exp(coef(mylogit))
 
-summary(glm_0)
-imageplot.bma(glm_0)
+#---------------------------BMA (giving me error)
+#glm_0<- bic.glm(df_simple[,-c(1,2)], df_simple[,1], glm.family="binomial", factor.type=FALSE)
+#summary(glm_0)
+#imageplot.bma(glm_0)
 
+###-------------------------------Bayes logistic (similar results as freq)
 library(arm)
 df_simple_bayes<- as.data.frame(df_simple[,-2])
-fit <- bayesglm(df_simple_bayes[,1] ~ ., data=df_simple_bayes, family="binomial")
+fit <- bayesglm(formula = drinks_binary ~., data= des_mat, family="binomial")
 summary(fit)
 
-library(glmnet)
-df_simple_glmnet<- as.data.frame(df_simple[,-2])
-x <- as.matrix(df_simple_glmnet[,-1])
-x <- model.matrix( ~ -1+., df_simple_glmnet[,-1])
-# Convert the outcome (class) to a numerical variable
-y <- df_simple_glmnet[,1]
-
-cv.lasso <- cv.glmnet(x, y, alpha = 1)
-plot(cv.lasso)
-# Fit the final model on the training data
-model <- glmnet(x, y, alpha = 1,
-                lambda = cv.lasso$lambda.min)
-# Display regression coefficients
-coef(model)
+# library(glmnet)
+# df_simple_glmnet<- as.data.frame(df_simple[,-2])
+# x <- as.matrix(df_simple_glmnet[,-1])
+# x <- model.matrix( ~ -1+., df_simple_glmnet[,-1])
+# # Convert the outcome (class) to a numerical variable
+# y <- df_simple_glmnet[,1]
+# 
+# cv.lasso <- cv.glmnet(des_mat, y, alpha = 1)
+# plot(cv.lasso)
+# # Fit the final model on the training data
+# model <- glmnet(x, y, alpha = 1,
+#                 lambda = cv.lasso$lambda.min)
+# # Display regression coefficients
+# coef(model)
 ```
 
 ### negative binomial regression
 
 ```{r}
-#### only including the true zeros and nonzeros
-#df_nb_true0<- rbind(df_simple[(df_simple$num_of_drinks ==0 & df_simple$df.drinks_binary ==0), ], df_simple[(df_simple$num_of_drinks !=0 & df_simple$df.drinks_binary !=0), ]) 
-
+#--------------------------------- factored dataset
 df_nb_true0<- df_simple[(df_simple$num_of_drinks !=0 & df_simple$df.drinks_binary !=0),]
 
 df_nb_true0$num_of_drinks<- ceiling(as.numeric(df_nb_true0$num_of_drinks))
 hist(df_nb_true0$num_of_drinks)
 mean(df_nb_true0$num_of_drinks); var(df_nb_true0$num_of_drinks)
 ### Since variance is a lot larger than mean, we use negative binomial model
+#----------------------------------------
 
-library(VGAM)
-df_nb_true0_all<- df_nb_true0[,-1]
-fit_nb<- vglm(formula = df_nb_true0_all$num_of_drinks ~., family = posnegbinomial(), 
-              data = df_nb_true0_all)
+#---------------------------------If using the indicator dataset
+df_nb_true0<- df[(df$num_of_drinks !=0 & df$drinks_binary !=0),]
+
+df_nb_true0$num_of_drinks<- ceiling(as.numeric(df_nb_true0$num_of_drinks))
+hist(df_nb_true0$num_of_drinks)
+mean(df_nb_true0$num_of_drinks); var(df_nb_true0$num_of_drinks)
+
+df_nb_true0<- df_nb_true0[,-1]
+des_mat = model.matrix(lm(num_of_drinks ~ ., data = df_nb_true0))
+des_mat<- des_mat[,-1]
+des_mat<- cbind(num_of_drinks = df_nb_true0$num_of_drinks, des_mat)
+df_nb_true0_all<- as.data.frame(des_mat)
+
+#library(VGAM)
+#fit_nb<- vglm(formula = num_of_drinks ~., family = posnegbinomial(), data = df_nb_true0_all)
+#summary(fit_nb)
+#round(exp(coef(m2)),3)
+
+library(MASS)
+fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0_all,link = log)
 summary(fit_nb)
-
-round(exp(coef(m2)),3)
-
+round(exp(coef(fit_nb)),3)
+#------------------- Using factored data
+fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0,link = log)
+summary(fit_nb)
 #df_simple$num_drink_true0<- ifelse(df_simple$num_of_drinks ==0 & df_simple$df.drinks_binary ==0, 0, df_simple$num_of_drinks)
 
 ```
