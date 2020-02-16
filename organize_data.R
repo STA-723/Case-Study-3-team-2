@@ -92,12 +92,10 @@ df$school_prohibs = ifelse(df$B5==1,1,0)
 
 df$school_disc_never = ifelse(df$B7_A==1& df$B7_B==1& df$B7_C==1& 
                                 df$B7_D==1& df$B7_E==1& df$B7_F==1, 1, 0)
-df$school_disc_once = ifelse((df$B7_A==2| df$B7_B==2| df$B7_C==2| 
-                               df$B7_D==2| df$B7_E==2| df$B7_F==2)&
-                               !(df$B7_A==3| df$B7_B==3| df$B7_C==3| 
-                               df$B7_D==3| df$B7_E==3| df$B7_F==3), 1, 0)
-df$school_disc_mult = ifelse(df$B7_A==3| df$B7_B==3| df$B7_C==3| 
-                                   df$B7_D==3| df$B7_E==3| df$B7_F==3, 1, 0)
+df$school_disc_once = ifelse(rowSums(cbind(df$B7_A==2, df$B7_B==2, df$B7_C==2, 
+                               df$B7_D==2, df$B7_E==2, df$B7_F==2))==1, 1, 0)
+df$school_disc_mult = ifelse(df$school_disc_never==0&df$school_disc_once==0,
+                             1, 0)
 
 #########################################
 
