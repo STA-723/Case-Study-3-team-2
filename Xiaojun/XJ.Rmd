@@ -107,12 +107,14 @@ dat93_subset$A9_E<- as.factor(dat93_subset$A9_E)
 dat93_subset$C1_A<- as.factor(dat93_subset$C1_A)
 dat93_subset$C1_B<- as.factor(dat93_subset$C1_B)
 # ------------------------------------------
+dat93_subset$num_of_drinks = dat93_subset$C7 * dat93_subset$C8
 dat93_subset$C7[is.na(dat93_subset$C7)] = 0
 dat93_subset$C7<- as.factor(dat93_subset$C7)
 dat93_subset$C8[is.na(dat93_subset$C8)] = 0
 dat93_subset$C8<- as.factor(dat93_subset$C8)
 dat93_subset$C9[is.na(dat93_subset$C9)] = 0
 dat93_subset$C9<- as.factor(dat93_subset$C9)
+
 # -----------------------------------------
 dat93_subset$E1_A<- as.factor(dat93_subset$E1_A)
 dat93_subset$E1_M<- as.factor(dat93_subset$E1_M)
@@ -258,7 +260,7 @@ ggplot(data = dat93_subset) +
 ```
 
 ```{r}
-save(df, file="df.rdata")
+#save(df, file="df.rdata")
 
 df_simple<- data.frame(df$drinks_binary)
 #df_simple$drinks_binary<- df$drinks_binary
@@ -284,6 +286,55 @@ df_simple$race<- factor(as.matrix(df[,c(32:37)])%*% 1:6, labels = colnames(df[,c
 df_simple$religion<- factor(as.matrix(df[,c(38:43)])%*% 1:6, labels = colnames(df[,c(38:43)]))
 df_simple<- cbind(df_simple, df[,44:48])
 df_simple$max_par_edu<- factor(as.matrix(df[,c(49:53)])%*% 1:5, labels = colnames(df[,c(49:53)]))
+
+save(df_simple, file="df_simple.rdata")
+#-----------------------------plots in slides and write-up
+# ggplot(subset(df_simple,!is.na(roommate)), aes(x=roommate, y=num_of_drinks, fill=roommate)) + 
+#     geom_boxplot()+
+#   scale_fill_discrete(name="Roommate")+
+#   labs(x = "Roommate", y = "Number of drinks per month")
+
+ggplot(df_simple, aes(x=num_of_drinks)) + 
+  geom_density()+
+  labs(x="Number of drinks per month")
+
+ggplot(subset(df_simple,!is.na(race)), aes(x=race, y=num_of_drinks, fill=race)) + 
+    geom_boxplot()+
+  scale_fill_discrete(name="Race")+
+  labs(x = "Race", y = "Number of drinks per month")+
+  scale_y_continuous(limits=c(0,100))
+  
+### comparison
+ggplot(subset(df_simple,!is.na(prohib_medical)), aes(x=as.factor(prohib_medical), y=num_of_drinks, fill=as.factor(prohib_medical))) + 
+    geom_boxplot()+
+  scale_fill_discrete(name="prohib_medical")+
+  labs(x = "Does medical conditions prohibit your drinking?", y = "Number of drinks per month")+
+  scale_y_continuous(limits=c(0,100))
+
+ggplot(subset(df_simple,!is.na(prohib_religion)), aes(x=as.factor(prohib_religion), y=num_of_drinks, fill=as.factor(prohib_religion))) + 
+    geom_boxplot()+
+  scale_fill_discrete(name="prohib_religion")+
+  labs(x = "Does religious reasons prohibit your drinking?", y = "Number of drinks per month")+
+  scale_y_continuous(limits=c(0,100))
+
+ggplot(subset(df_simple,!is.na(tobac)), aes(x=as.factor(tobac), y=num_of_drinks, fill=as.factor(tobac))) + 
+    geom_boxplot()+
+  scale_fill_discrete(name="tobacco or cigarettes use")+
+  labs(x = "Have you used tobacco or cigarettes?", y = "Number of drinks per month")+
+  scale_y_continuous(limits=c(0,100))
+
+# ggplot(subset(df_simple,!is.na(mom_heavy_drinker)), aes(x=as.factor(mom_heavy_drinker), y=num_of_drinks, fill=as.factor(mom_heavy_drinker))) + geom_boxplot()+
+#   scale_fill_discrete(name="Happiness")+
+#   labs(x = "Mom is a heavy drinker", y = "Number of drinks per month")+
+#   scale_y_continuous(limits=c(0,100))
+
+ggplot(subset(df_simple,!is.na(max_par_edu)), aes(x=as.factor(max_par_edu), y=num_of_drinks, fill=as.factor(max_par_edu))) + geom_boxplot()+
+  scale_fill_discrete(name="Higher Parent education", labels=c("DK","someHS","HS","some College", "College"))+
+  labs(x = "Higher Parent education", y = "Number of drinks per month")+
+  scale_y_continuous(limits=c(0,100))+
+  scale_x_discrete(labels=c("DK","someHS","HS","some College", "College"))
+  
+
 ```
 
 
@@ -302,9 +353,11 @@ df_simple$max_par_edu<- factor(as.matrix(df[,c(49:53)])%*% 1:5, labels = colname
 load("C:/Users/XJ/OneDrive - Duke University/STA-723/Case-Study-3-team-2/df.rdata")
 library(BMA)
 df<- df[,-2]
-des_mat = model.matrix(lm(drinks_binary ~ ., data = df))
+df_ref<- df %>% dplyr::select(-c(age_15_17,subfree_on_housing, weird_roomate, happy, single, religion_none, max_parent_edu_DK))
+
+des_mat = model.matrix(lm(drinks_binary ~ ., data = df_ref))
 des_mat<- des_mat[,-1]
-des_mat<- cbind(drinks_binary = df$drinks_binary, des_mat)
+des_mat<- cbind(drinks_binary = df_ref$drinks_binary, des_mat)
 des_mat<- as.data.frame(des_mat)
 ###---------------------------- normal logistic regression
 mylogit <- glm(formula = drinks_binary ~., data = des_mat, family = "binomial")
@@ -313,7 +366,21 @@ exp(coef(mylogit))
 ### ------------------------------stepwise logistic (maybe variable selection)
 library(dplyr)
 model_stepwise <- glm(formula = drinks_binary ~., data = des_mat, family = "binomial") %>% stepAIC(trace = FALSE)
+save(model_stepwise, file="model_stepwise.rdata")
 summary(model_stepwise)
+
+odds_mean<- exp(summary(model_stepwise)$coefficients)
+odds_lb <- exp(-2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean<- odds_mean / (1 + odds_mean);
+knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub
+                              ),
+             format = "latex", digits = 3)
+
+
 #---------------------------BMA (giving me error)
 #glm_0<- bic.glm(df_simple[,-c(1,2)], df_simple[,1], glm.family="binomial", factor.type=FALSE)
 #summary(glm_0)
@@ -377,6 +444,17 @@ fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0_all,link = log)
 summary(fit_nb)
 round(exp(coef(fit_nb)),3)
 
+odds_mean<- exp(summary(fit_nb)$coefficients)
+odds_lb <- exp(-2 * summary(fit_nb)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(fit_nb)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean<- odds_mean / (1 + odds_mean);
+knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub
+                              ),
+             format = "latex", digits = 3)
+
 list(residual.deviance= deviance(fit_nb),
      residual.degrees.of.freedom = df.residual(fit_nb),
      chisq.p.value= pchisq(deviance(fit_nb), df.residual(fit_nb), lower = F)
@@ -385,8 +463,8 @@ list(residual.deviance= deviance(fit_nb),
 ### pvalue pretty small
 
 #------------------- Using factored data
-fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0,link = log)
-summary(fit_nb)
+#fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0,link = log)
+#summary(fit_nb)
 
 ##gof ... 
 #df_simple$num_drink_true0<- ifelse(df_simple$num_of_drinks ==0 & df_simple$df.drinks_binary ==0, 0, df_simple$num_of_drinks)
