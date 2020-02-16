@@ -1,11 +1,12 @@
 library(dplyr)
 library(mice)
 
-load(file=paste0('data_1993.rdata')) 
+load('data_1993.rdata') 
 
 
 # subsetted data
-dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, C1_A, 
+dat93_subset<- dat93 %>% dplyr::select(c(A1, A2, A3, A4, A5, A6, A7, A8, A9_C, A9_E, 
+                                         B5, B7_A, B7_B, B7_C, B7_D, B7_E, B7_F, C1_A, 
                                          C1_B, C6, C7, C8, D4, D5, E1_A, E1_B,E1_C,E1_D,E1_E,
                                          E1_F,E1_G,E1_H,E1_I,E1_J,E1_K,E1_L, E1_M, E12A, F1,
                                          F5, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, 
@@ -75,7 +76,7 @@ df$off_housing = ifelse((df$A5==3|df$A5==6)&df$D4==1,1,0)
 # who do you liv with
 df$no_roommate = ifelse(df$A6==1,1,0)
 df$roommate = ifelse(df$A6==2,1,0)
-df$weird_roomate = ifelse(df$A6==3|df$A6==4|df$A6==5|df$A6>=6,1,0)
+df$family_roomate = ifelse(df$A6==3|df$A6==4|df$A6==5|df$A6>=6,1,0)
 
 # 0,1 for frat
 df$greek = ifelse(df$A8==1,1,0)
@@ -83,6 +84,20 @@ df$greek = ifelse(df$A8==1,1,0)
 # A9 questions
 df$academic_important = ifelse(df$A9_C==1|df$A9_C==2,1,0)
 df$religion_important = ifelse(df$A9_E==1|df$A9_E==2,1,0)
+
+#########################################
+
+## Handle Bs
+df$school_prohibs = ifelse(df$B5==1,1,0)
+
+df$school_disc_never = ifelse(df$B7_A==1& df$B7_B==1& df$B7_C==1& 
+                                df$B7_D==1& df$B7_E==1& df$B7_F==1, 1, 0)
+df$school_disc_once = ifelse((df$B7_A==2| df$B7_B==2| df$B7_C==2| 
+                               df$B7_D==2| df$B7_E==2| df$B7_F==2)&
+                               !(df$B7_A==3| df$B7_B==3| df$B7_C==3| 
+                               df$B7_D==3| df$B7_E==3| df$B7_F==3), 1, 0)
+df$school_disc_mult = ifelse(df$B7_A==3| df$B7_B==3| df$B7_C==3| 
+                                   df$B7_D==3| df$B7_E==3| df$B7_F==3, 1, 0)
 
 #########################################
 
