@@ -369,13 +369,14 @@ model_stepwise <- glm(formula = drinks_binary ~., data = des_mat, family = "bino
 save(model_stepwise, file="model_stepwise.rdata")
 summary(model_stepwise)
 
-odds_lb <- exp(-2 * summary(olm_with_pc)$coefficients[20:22, "Std. Error"])
-odds_ub <- exp(blo) * exp(2 * summary(olm_with_pc)$coefficients[20:22, "Std. Error"])
-probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub) 
+odds_mean<- exp(summary(model_stepwise)$coefficients)
+odds_lb <- exp(-2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean<- odds_mean / (1 + odds_mean);
 knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
-                              "Mean" = bprobs,
-                              "Upper bound" = probs_ub,
-                              row.names = c("Very preterm", "Moderately", "Late preterm")
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub
                               ),
              format = "latex", digits = 3)
 
@@ -443,6 +444,17 @@ fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0_all,link = log)
 summary(fit_nb)
 round(exp(coef(fit_nb)),3)
 
+odds_mean<- exp(summary(fit_nb)$coefficients)
+odds_lb <- exp(-2 * summary(fit_nb)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(fit_nb)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean<- odds_mean / (1 + odds_mean);
+knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub
+                              ),
+             format = "latex", digits = 3)
+
 list(residual.deviance= deviance(fit_nb),
      residual.degrees.of.freedom = df.residual(fit_nb),
      chisq.p.value= pchisq(deviance(fit_nb), df.residual(fit_nb), lower = F)
@@ -451,8 +463,8 @@ list(residual.deviance= deviance(fit_nb),
 ### pvalue pretty small
 
 #------------------- Using factored data
-fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0,link = log)
-summary(fit_nb)
+#fit_nb<- glm.nb(formula = num_of_drinks ~., data = df_nb_true0,link = log)
+#summary(fit_nb)
 
 ##gof ... 
 #df_simple$num_drink_true0<- ifelse(df_simple$num_of_drinks ==0 & df_simple$df.drinks_binary ==0, 0, df_simple$num_of_drinks)
