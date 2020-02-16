@@ -24,6 +24,11 @@ df <- df[-notmatching,]
 # set NA to 0
 df$C11[is.na(df$C11)] <- 0
 df$C12[is.na(df$C12)] <- 0
+df$G3A[is.na(df$G3A)] <- 0
+df$G3B[is.na(df$G3B)] <- 0
+df$G3C[is.na(df$G3C)] <- 0
+df$G3D[is.na(df$G3D)] <- 0
+df$G3E[is.na(df$G3E)] <- 0
 
 # change C11 to be mean of each range
 ranges = matrix(c(1, 2, 3, 5, 6, 9, 10, 19, 20, 39, 40, 50), byrow=T, ncol=2)
@@ -129,11 +134,11 @@ df$div_sep_wid = ifelse(df$G1==3|df$G1==4|df$G1==5,1,0)
 
 # race
 df$hispanic = ifelse(df$G2==1,1,0)
-df$white = ifelse(df$G3A==1&df$G2==0,1,0)
-df$black = ifelse(df$G3B==1&df$G2==0,1,0)
-df$asian = ifelse(df$G3C==1&df$G2==0,1,0)
-df$native = ifelse(df$G3D==1&df$G2==0,1,0)
-df$other = ifelse(df$G3E==1&df$G2==0,1,0)
+df$white = ifelse((df$G3A==1)&(df$G2!=1),1,0)
+df$black = ifelse((df$G3B==1)&(df$G2!=1),1,0)
+df$asian = ifelse((df$G3C==1)&(df$G2!=1),1,0)
+df$native = ifelse((df$G3D==1)&(df$G2!=1),1,0)
+df$other = ifelse((df$G3E==1)&(df$G2!=1),1,0)
 
 # religion
 df$religion_none = ifelse(df$G4==1,1,0)
@@ -145,16 +150,16 @@ df$religion_other = ifelse(df$G4==6,1,0)
 
 
 # change weight to be middle of range
-ranges = matrix(c(105, 117, 118, 128, 129, 135, 136, 146, 147, 160, 161, 170, 171, 190, 191, 210), byrow=T, ncol=2)
-mean_ranges2 = rowMeans(ranges)
+ranges2 = matrix(c(105, 117, 118, 128, 129, 135, 136, 146, 147, 160, 161, 170, 171, 190, 191, 210), byrow=T, ncol=2)
+mean_ranges2 = rowMeans(ranges2)
 for(j in 1:length(mean_ranges2)) {
   df$G7[df$G7==j] = mean_ranges2[j]
 }
 df$weight = df$G7
 
 # change height to be middle of range
-ranges = matrix(c(62, 63, 64, 64, 65, 65, 66, 66, 67, 69, 70, 70, 71, 72, 73, 74), byrow=T, ncol=2)
-mean_ranges3 = rowMeans(ranges)
+ranges3 = matrix(c(62, 63, 64, 64, 65, 65, 66, 66, 67, 69, 70, 70, 71, 72, 73, 74), byrow=T, ncol=2)
+mean_ranges3 = rowMeans(ranges3)
 for(j in 1:length(mean_ranges3)) {
   df$G8[df$G8==j] = mean_ranges3[j]
 }
@@ -188,6 +193,18 @@ df$max_parent_edu_HS = ifelse(max_parent_edu==2,1,0)
 df$max_parent_edu_someCol = ifelse(max_parent_edu==3,1,0)
 df$max_parent_edu_col = ifelse(max_parent_edu==4,1,0)
 
+
+df$school_prohibs = ifelse(df$B2==1|df$B2==2|df$B2==3|df$B2==4, 1, 0)
+
+once = (df$C19A==2) + (df$C19B==2) + (df$C19C==2) + (df$C19D==2) + (df$C19E==2) + (df$C19F==2) + (df$C19G==2) + (df$C19H==2)
+twice_or_more = (df$C19A>2 & df$C19A<5) + (df$C19B>2 & df$C19B<5) + (df$C19C>2 & df$C19C<5) + 
+  (df$C19D>2 & df$C19D<5) + (df$C19E>2 & df$C19E<5) + (df$C19F>2 & df$C19F<5) + (df$C19G>2 & df$C19G<5) + 
+  (df$C19H>2 & df$C19H<5)
+total = once + (2*twice_or_more)
+
+df$school_disc_never = ifelse(df$C19A==1 & df$C19B==1 & df$C19C==1 & df$C19D==1 & df$C19E==1 & df$C19F==1 & df$C19G==1 & df$C19H==1, 1, 0)
+df$school_disc_once = ifelse(total == 1, 1, 0)
+df$school_disc_mult = ifelse(total > 1, 1, 0)
 
 ## drop all original variables
 C12_loc = which(colnames(df)=="C12")
