@@ -1,0 +1,123 @@
+---
+title: "heavy drinker"
+output: html_document
+---
+
+```{r}
+library(BMA)
+library(dplyr)
+library(knitr)
+library(MASS)
+```
+
+# 1993, females
+```{r}
+load("df_1993.rdata")
+df = df[df$drinks_binary == 1,]
+df = df[df$gender == 1,]
+df$heavy_drinker = ifelse(df$num_of_drinks >= 35, 1, 0)
+df_ref <- df %>% dplyr::select(-c(drinks_binary, gender, num_of_drinks))
+
+des_mat = model.matrix(lm(heavy_drinker ~ ., data = df_ref))
+des_mat <- des_mat[, -1]
+des_mat <- cbind(heavy_drinker = df_ref$heavy_drinker, des_mat)
+des_mat <- as.data.frame(des_mat)
+
+model_stepwise <- glm(formula = heavy_drinker ~., data = des_mat,
+                      family = "binomial") %>% stepAIC(trace = FALSE)
+save(model_stepwise, file="model_stepwise_female_1993.rdata")
+summary(model_stepwise)
+
+odds_mean <- exp(summary(model_stepwise)$coefficients)
+odds_lb <- exp(-2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean <- odds_mean / (1 + odds_mean);
+knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub), format = "latex", digits = 3)
+```
+
+# 1993, males
+```{r}
+load("df_1993.rdata")
+df = df[df$drinks_binary == 1,]
+df = df[df$gender == 0,]
+df$heavy_drinker = ifelse(df$num_of_drinks >= 65, 1, 0)
+df_ref <- df %>% dplyr::select(-c(drinks_binary, gender, num_of_drinks))
+
+des_mat = model.matrix(lm(heavy_drinker ~ ., data = df_ref))
+des_mat <- des_mat[, -1]
+des_mat <- cbind(heavy_drinker = df_ref$heavy_drinker, des_mat)
+des_mat <- as.data.frame(des_mat)
+
+model_stepwise <- glm(formula = heavy_drinker ~., data = des_mat,
+                      family = "binomial") %>% stepAIC(trace = FALSE)
+save(model_stepwise, file="model_stepwise_male_1993.rdata")
+summary(model_stepwise)
+
+odds_mean <- exp(summary(model_stepwise)$coefficients)
+odds_lb <- exp(-2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean <- odds_mean / (1 + odds_mean);
+knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub), format = "latex", digits = 3)
+```
+
+# 2001, females
+```{r}
+load("df_2001.rdata")
+df = df[df$drinks_binary == 1,]
+df = df[df$gender == 1,]
+df$heavy_drinker = ifelse(df$num_of_drinks >= 35, 1, 0)
+df_ref <- df %>% dplyr::select(-c(drinks_binary, gender, num_of_drinks))
+
+des_mat = model.matrix(lm(heavy_drinker ~ ., data = df_ref))
+des_mat <- des_mat[, -1]
+des_mat <- cbind(heavy_drinker = df_ref$heavy_drinker, des_mat)
+des_mat <- as.data.frame(des_mat)
+
+model_stepwise <- glm(formula = heavy_drinker ~., data = des_mat,
+                      family = "binomial") %>% stepAIC(trace = FALSE)
+save(model_stepwise, file="model_stepwise_female_2001.rdata")
+summary(model_stepwise)
+
+odds_mean <- exp(summary(model_stepwise)$coefficients)
+odds_lb <- exp(-2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean <- odds_mean / (1 + odds_mean);
+knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub), format = "latex", digits = 3)
+```
+
+# 2001, males
+```{r}
+load("df_2001.rdata")
+df = df[df$drinks_binary == 1,]
+df = df[df$gender == 0,]
+df$heavy_drinker = ifelse(df$num_of_drinks >= 65, 1, 0)
+df_ref <- df %>% dplyr::select(-c(drinks_binary, gender, num_of_drinks))
+
+des_mat = model.matrix(lm(heavy_drinker ~ ., data = df_ref))
+des_mat <- des_mat[, -1]
+des_mat <- cbind(heavy_drinker = df_ref$heavy_drinker, des_mat)
+des_mat <- as.data.frame(des_mat)
+
+model_stepwise <- glm(formula = heavy_drinker ~., data = des_mat,
+                      family = "binomial") %>% stepAIC(trace = FALSE)
+save(model_stepwise, file="model_stepwise_male_2001.rdata")
+summary(model_stepwise)
+
+odds_mean <- exp(summary(model_stepwise)$coefficients)
+odds_lb <- exp(-2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+odds_ub <- exp(2 * summary(model_stepwise)$coefficients[, "Std. Error"])
+probs_lb <- odds_lb / (1 + odds_lb); probs_ub <- odds_ub / (1 + odds_ub);
+probs_mean <- odds_mean / (1 + odds_mean);
+knitr::kable(cbind.data.frame("Lower bound" = probs_lb,
+                              "Mean" = probs_mean,
+                              "Upper bound" = probs_ub), format = "latex", digits = 3)
+```
