@@ -370,55 +370,22 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>library(BMA)</code></pre>
-<pre><code>## Loading required package: survival</code></pre>
-<pre><code>## 
-## Attaching package: 'survival'</code></pre>
-<pre><code>## The following object is masked from 'package:openintro':
-## 
-##     transplant</code></pre>
-<pre><code>## Loading required package: leaps</code></pre>
-<pre><code>## Loading required package: robustbase</code></pre>
-<pre><code>## 
-## Attaching package: 'robustbase'</code></pre>
-<pre><code>## The following object is masked from 'package:survival':
-## 
-##     heart</code></pre>
-<pre><code>## Loading required package: inline</code></pre>
-<pre><code>## Loading required package: rrcov</code></pre>
-<pre><code>## Scalable Robust Estimators with High Breakdown Point (version 1.5-2)</code></pre>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following object is masked from 'package:GGally':
-## 
-##     nasa</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from 'package:lubridate':
-## 
-##     intersect, setdiff, union</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(knitr)
-library(MASS)</code></pre>
-<pre><code>## 
-## Attaching package: 'MASS'</code></pre>
-<pre><code>## The following object is masked from 'package:dplyr':
-## 
-##     select</code></pre>
-<pre><code>## The following objects are masked from 'package:openintro':
-## 
-##     housing, mammals</code></pre>
+<pre class="r"><code>library(BMA)
+library(dplyr)
+library(knitr)
+library(MASS)
+library(xtable)
+library(gtools)</code></pre>
 <div id="females" class="section level1">
 <h1>1993, females</h1>
 <pre class="r"><code>load(&quot;df_1993.rdata&quot;)
 df = df[df$drinks_binary == 1,]
 df = df[df$gender == 1,]
 df$heavy_drinker = ifelse(df$num_of_drinks &gt;= 35, 1, 0)
-df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks))</code></pre>
+df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks, age_15_17,
+                                  on_housing, no_roommate, school_disc_never,
+                                  somewhat_happy, single, religion_none, max_parent_edu_DK,
+                                  other, relationship))</code></pre>
 <pre><code>## Warning: `lang()` is deprecated as of rlang 0.2.0.
 ## Please use `call2()` instead.
 ## This warning is displayed once per session.</code></pre>
@@ -440,64 +407,102 @@ summary(model_stepwise)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = heavy_drinker ~ roommate + greek + religion_important + 
-##     school_disc_never + school_disc_once + prohib_medical + prohib_religion + 
-##     tobac + marijuana + hard_drugs + gpa + single + relationship + 
-##     white + black + asian + native + religion_none + religion_catholic + 
-##     religion_prot + height + HS_num_of_drinks + max_parent_edu_DK + 
-##     max_parent_edu_someHS + max_parent_edu_someCol, family = &quot;binomial&quot;, 
-##     data = des_mat)
+##     school_disc_once + school_disc_mult + prohib_medical + prohib_religion + 
+##     tobac + marijuana + hard_drugs + gpa + married + div_sep_wid + 
+##     white + black + asian + native + religion_catholic + religion_jewish + 
+##     religion_prot + height + HS_num_of_drinks + max_parent_edu_someHS + 
+##     max_parent_edu_HS + max_parent_edu_someCol + max_parent_edu_col, 
+##     family = &quot;binomial&quot;, data = des_mat)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.2435  -0.7402  -0.4597   0.7639   2.8135  
+## -2.2028  -0.7395  -0.4610   0.7663   2.7931  
 ## 
 ## Coefficients:
 ##                          Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)            -3.1076061  0.7181706  -4.327 1.51e-05 ***
-## roommate                0.5518542  0.0652807   8.454  &lt; 2e-16 ***
-## greek                   0.5937603  0.0725835   8.180 2.83e-16 ***
-## religion_important     -0.2638080  0.0662700  -3.981 6.87e-05 ***
-## school_disc_never      -0.8635730  0.0715634 -12.067  &lt; 2e-16 ***
-## school_disc_once       -0.1256046  0.0782063  -1.606 0.108259    
-## prohib_medical         -0.2925222  0.1168763  -2.503 0.012320 *  
-## prohib_religion        -0.9663157  0.1561504  -6.188 6.08e-10 ***
-## tobac                   0.8784535  0.0653143  13.450  &lt; 2e-16 ***
-## marijuana               0.6237719  0.0874702   7.131 9.95e-13 ***
-## hard_drugs              0.5580342  0.1423792   3.919 8.88e-05 ***
-## gpa                    -0.3104576  0.0513955  -6.041 1.54e-09 ***
-## single                  0.9612182  0.1398608   6.873 6.30e-12 ***
-## relationship            0.8134250  0.1324758   6.140 8.24e-10 ***
-## white                   0.4118662  0.1188959   3.464 0.000532 ***
-## black                  -0.9157856  0.2110760  -4.339 1.43e-05 ***
-## asian                  -0.5003641  0.2029215  -2.466 0.013671 *  
-## native                 -0.8786016  0.5329396  -1.649 0.099231 .  
-## religion_none           0.3289128  0.1471963   2.235 0.025449 *  
-## religion_catholic       0.6349119  0.1269903   5.000 5.74e-07 ***
-## religion_prot           0.6162043  0.1271619   4.846 1.26e-06 ***
-## height                  0.0185072  0.0105403   1.756 0.079113 .  
-## HS_num_of_drinks        0.0071964  0.0007411   9.710  &lt; 2e-16 ***
-## max_parent_edu_DK       0.8526058  0.4916227   1.734 0.082870 .  
-## max_parent_edu_someHS  -0.3674639  0.2064732  -1.780 0.075122 .  
-## max_parent_edu_someCol  0.1054562  0.0649702   1.623 0.104558    
+## (Intercept)            -2.0288207  0.8617485  -2.354 0.018557 *  
+## roommate                0.5580631  0.0653587   8.538  &lt; 2e-16 ***
+## greek                   0.5819271  0.0726011   8.015 1.10e-15 ***
+## religion_important     -0.2682610  0.0660988  -4.058 4.94e-05 ***
+## school_disc_once        0.7427878  0.0712134  10.430  &lt; 2e-16 ***
+## school_disc_mult        0.8662494  0.0715256  12.111  &lt; 2e-16 ***
+## prohib_medical         -0.2975998  0.1166965  -2.550 0.010766 *  
+## prohib_religion        -0.9609366  0.1562018  -6.152 7.66e-10 ***
+## tobac                   0.8775388  0.0653210  13.434  &lt; 2e-16 ***
+## marijuana               0.6200387  0.0875266   7.084 1.40e-12 ***
+## hard_drugs              0.5487967  0.1424130   3.854 0.000116 ***
+## gpa                    -0.3122953  0.0514634  -6.068 1.29e-09 ***
+## married                -0.9019892  0.1597203  -5.647 1.63e-08 ***
+## div_sep_wid            -0.7264644  0.2071376  -3.507 0.000453 ***
+## white                   0.4114958  0.1187188   3.466 0.000528 ***
+## black                  -0.9205439  0.2107135  -4.369 1.25e-05 ***
+## asian                  -0.5139545  0.2030582  -2.531 0.011372 *  
+## native                 -0.9152541  0.5363493  -1.706 0.087924 .  
+## religion_catholic       0.3650325  0.0942425   3.873 0.000107 ***
+## religion_jewish        -0.2682140  0.1696497  -1.581 0.113881    
+## religion_prot           0.3384448  0.0941447   3.595 0.000324 ***
+## height                  0.0194057  0.0105458   1.840 0.065748 .  
+## HS_num_of_drinks        0.0071481  0.0007412   9.644  &lt; 2e-16 ***
+## max_parent_edu_someHS  -1.2354629  0.5241434  -2.357 0.018418 *  
+## max_parent_edu_HS      -0.9279077  0.4927738  -1.883 0.059696 .  
+## max_parent_edu_someCol -0.7621190  0.4892633  -1.558 0.119307    
+## max_parent_edu_col     -0.8454742  0.4879858  -1.733 0.083170 .  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 9276.7  on 7728  degrees of freedom
-## Residual deviance: 7367.7  on 7703  degrees of freedom
-## AIC: 7419.7
+## Residual deviance: 7374.0  on 7702  degrees of freedom
+## AIC: 7428
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
-<pre class="r"><code>odds_mean &lt;- exp(summary(model_stepwise)$coefficients)
-odds_lb &lt;- exp(-2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-odds_ub &lt;- exp(2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-probs_lb &lt;- odds_lb / (1 + odds_lb); probs_ub &lt;- odds_ub / (1 + odds_ub);
-probs_mean &lt;- odds_mean / (1 + odds_mean);
-knitr::kable(cbind.data.frame(&quot;Lower bound&quot; = probs_lb,
-                              &quot;Mean&quot; = probs_mean,
-                              &quot;Upper bound&quot; = probs_ub), format = &quot;latex&quot;, digits = 3)</code></pre>
-
+<pre class="r"><code>odds_mean&lt;- exp(summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_lb &lt;- exp(-1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_ub &lt;- exp(1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+sig_level &lt;- stars.pval(summary(model_stepwise)$coefficients[,4])
+xtable(cbind.data.frame(&quot;Lower bound&quot; = odds_lb, &quot;Mean&quot; = odds_mean, &quot;Upper bound&quot; = odds_ub,
+                        &quot;Significance level&quot; = sig_level))</code></pre>
+<pre><code>## % latex table generated in R 3.5.1 by xtable 1.8-3 package
+## % Mon Feb 17 20:43:59 2020
+## \begin{table}[ht]
+## \centering
+## \begin{tabular}{rrrrl}
+##   \hline
+##  &amp; Lower bound &amp; Mean &amp; Upper bound &amp; Significance level \\ 
+##   \hline
+## (Intercept) &amp; 0.02 &amp; 0.13 &amp; 0.71 &amp; * \\ 
+##   roommate &amp; 1.54 &amp; 1.75 &amp; 1.99 &amp; *** \\ 
+##   greek &amp; 1.55 &amp; 1.79 &amp; 2.06 &amp; *** \\ 
+##   religion\_important &amp; 0.67 &amp; 0.76 &amp; 0.87 &amp; *** \\ 
+##   school\_disc\_once &amp; 1.83 &amp; 2.10 &amp; 2.42 &amp; *** \\ 
+##   school\_disc\_mult &amp; 2.07 &amp; 2.38 &amp; 2.74 &amp; *** \\ 
+##   prohib\_medical &amp; 0.59 &amp; 0.74 &amp; 0.93 &amp; * \\ 
+##   prohib\_religion &amp; 0.28 &amp; 0.38 &amp; 0.52 &amp; *** \\ 
+##   tobac &amp; 2.12 &amp; 2.40 &amp; 2.73 &amp; *** \\ 
+##   marijuana &amp; 1.57 &amp; 1.86 &amp; 2.21 &amp; *** \\ 
+##   hard\_drugs &amp; 1.31 &amp; 1.73 &amp; 2.29 &amp; *** \\ 
+##   gpa &amp; 0.66 &amp; 0.73 &amp; 0.81 &amp; *** \\ 
+##   married &amp; 0.30 &amp; 0.41 &amp; 0.55 &amp; *** \\ 
+##   div\_sep\_wid &amp; 0.32 &amp; 0.48 &amp; 0.73 &amp; *** \\ 
+##   white &amp; 1.20 &amp; 1.51 &amp; 1.90 &amp; *** \\ 
+##   black &amp; 0.26 &amp; 0.40 &amp; 0.60 &amp; *** \\ 
+##   asian &amp; 0.40 &amp; 0.60 &amp; 0.89 &amp; * \\ 
+##   native &amp; 0.14 &amp; 0.40 &amp; 1.15 &amp; . \\ 
+##   religion\_catholic &amp; 1.20 &amp; 1.44 &amp; 1.73 &amp; *** \\ 
+##   religion\_jewish &amp; 0.55 &amp; 0.76 &amp; 1.07 &amp;   \\ 
+##   religion\_prot &amp; 1.17 &amp; 1.40 &amp; 1.69 &amp; *** \\ 
+##   height &amp; 1.00 &amp; 1.02 &amp; 1.04 &amp; . \\ 
+##   HS\_num\_of\_drinks &amp; 1.01 &amp; 1.01 &amp; 1.01 &amp; *** \\ 
+##   max\_parent\_edu\_someHS &amp; 0.10 &amp; 0.29 &amp; 0.81 &amp; * \\ 
+##   max\_parent\_edu\_HS &amp; 0.15 &amp; 0.40 &amp; 1.04 &amp; . \\ 
+##   max\_parent\_edu\_someCol &amp; 0.18 &amp; 0.47 &amp; 1.22 &amp;   \\ 
+##   max\_parent\_edu\_col &amp; 0.16 &amp; 0.43 &amp; 1.12 &amp; . \\ 
+##    \hline
+## \end{tabular}
+## \end{table}</code></pre>
 </div>
 <div id="males" class="section level1">
 <h1>1993, males</h1>
@@ -505,7 +510,10 @@ knitr::kable(cbind.data.frame(&quot;Lower bound&quot; = probs_lb,
 df = df[df$drinks_binary == 1,]
 df = df[df$gender == 0,]
 df$heavy_drinker = ifelse(df$num_of_drinks &gt;= 65, 1, 0)
-df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks))
+df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks, age_15_17,
+                                  on_housing, no_roommate, school_disc_never,
+                                  somewhat_happy, single, religion_none, max_parent_edu_DK,
+                                  other, relationship))
 
 des_mat = model.matrix(lm(heavy_drinker ~ ., data = df_ref))
 des_mat &lt;- des_mat[, -1]
@@ -518,70 +526,105 @@ save(model_stepwise, file=&quot;model_stepwise_male_1993.rdata&quot;)
 summary(model_stepwise)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = heavy_drinker ~ age_18_20 + age_21_22 + subfree_on_housing + 
-##     on_housing + no_roommate + roommate + greek + academic_important + 
-##     religion_important + school_disc_never + school_disc_once + 
+## glm(formula = heavy_drinker ~ age_18_20 + age_21_22 + off_housing + 
+##     roommate + family_roomate + greek + academic_important + 
+##     religion_important + school_disc_once + school_disc_mult + 
 ##     prohib_medical + prohib_religion + tobac + marijuana + hard_drugs + 
-##     aa_attendance + somewhat_happy + gpa + single + married + 
-##     white + native + religion_catholic + religion_jewish + weight + 
-##     HS_num_of_drinks + mom_heavy_drinker + dad_heavy_drinker, 
-##     family = &quot;binomial&quot;, data = des_mat)
+##     aa_attendance + happy + not_happy + gpa + married + white + 
+##     native + religion_catholic + religion_jewish + weight + HS_num_of_drinks + 
+##     dad_heavy_drinker, family = &quot;binomial&quot;, data = des_mat)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.4558  -0.6854  -0.4250  -0.1723   2.9003  
+## -2.4359  -0.6859  -0.4251  -0.1742   2.8837  
 ## 
 ## Coefficients:
 ##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)        -2.2332596  0.4958323  -4.504 6.67e-06 ***
-## age_18_20           0.6348174  0.1095415   5.795 6.82e-09 ***
-## age_21_22           0.4303379  0.1058455   4.066 4.79e-05 ***
-## subfree_on_housing -0.2677664  0.1028407  -2.604 0.009222 ** 
-## on_housing         -0.2158007  0.0977540  -2.208 0.027273 *  
-## no_roommate         0.3851080  0.1422440   2.707 0.006782 ** 
-## roommate            0.6386663  0.1011356   6.315 2.70e-10 ***
-## greek               0.6050247  0.0841373   7.191 6.44e-13 ***
-## academic_important -0.3107345  0.1575274  -1.973 0.048544 *  
-## religion_important -0.2340261  0.0852464  -2.745 0.006046 ** 
-## school_disc_never  -0.8651171  0.0879389  -9.838  &lt; 2e-16 ***
-## school_disc_once   -0.1664472  0.0862795  -1.929 0.053711 .  
-## prohib_medical     -0.6497024  0.1682167  -3.862 0.000112 ***
-## prohib_religion    -0.7460347  0.2029329  -3.676 0.000237 ***
-## tobac               0.8390093  0.0728267  11.521  &lt; 2e-16 ***
-## marijuana           0.6283629  0.0911506   6.894 5.44e-12 ***
-## hard_drugs          0.3095416  0.1386416   2.233 0.025570 *  
-## aa_attendance      -0.7916027  0.3637565  -2.176 0.029541 *  
-## somewhat_happy     -0.4390059  0.1407428  -3.119 0.001813 ** 
-## gpa                -0.2082152  0.0585974  -3.553 0.000380 ***
-## single              0.1143725  0.0730688   1.565 0.117519    
-## married            -0.4193604  0.2317466  -1.810 0.070363 .  
-## white               0.4862170  0.1050338   4.629 3.67e-06 ***
-## native              0.7415207  0.4816261   1.540 0.123653    
-## religion_catholic   0.3256541  0.0728327   4.471 7.78e-06 ***
-## religion_jewish    -0.3517936  0.1910155  -1.842 0.065519 .  
-## weight              0.0064636  0.0012050   5.364 8.15e-08 ***
-## HS_num_of_drinks    0.0062880  0.0006053  10.388  &lt; 2e-16 ***
-## mom_heavy_drinker   0.3296732  0.2251371   1.464 0.143106    
-## dad_heavy_drinker   0.2823850  0.1120192   2.521 0.011707 *  
+## (Intercept)        -3.3217551  0.5167461  -6.428 1.29e-10 ***
+## age_18_20           0.6340133  0.1091828   5.807 6.36e-09 ***
+## age_21_22           0.4279201  0.1055783   4.053 5.05e-05 ***
+## off_housing         0.2335276  0.0826218   2.826 0.004706 ** 
+## roommate            0.2568072  0.1170224   2.195 0.028198 *  
+## family_roomate     -0.3946910  0.1417971  -2.783 0.005378 ** 
+## greek               0.5963835  0.0838620   7.111 1.15e-12 ***
+## academic_important -0.3036259  0.1574025  -1.929 0.053734 .  
+## religion_important -0.2427695  0.0850517  -2.854 0.004312 ** 
+## school_disc_once    0.6946226  0.0901181   7.708 1.28e-14 ***
+## school_disc_mult    0.8591543  0.0878212   9.783  &lt; 2e-16 ***
+## prohib_medical     -0.6428726  0.1678254  -3.831 0.000128 ***
+## prohib_religion    -0.7506788  0.2030187  -3.698 0.000218 ***
+## tobac               0.8393899  0.0727804  11.533  &lt; 2e-16 ***
+## marijuana           0.6303680  0.0911251   6.918 4.59e-12 ***
+## hard_drugs          0.3198074  0.1384414   2.310 0.020885 *  
+## aa_attendance      -0.7955167  0.3625657  -2.194 0.028226 *  
+## happy               0.4034872  0.1399498   2.883 0.003938 ** 
+## not_happy           0.7003960  0.2701321   2.593 0.009520 ** 
+## gpa                -0.2068601  0.0586163  -3.529 0.000417 ***
+## married            -0.4491871  0.2304745  -1.949 0.051299 .  
+## white               0.4905490  0.1050167   4.671 3.00e-06 ***
+## native              0.7461514  0.4831561   1.544 0.122509    
+## religion_catholic   0.3343435  0.0726019   4.605 4.12e-06 ***
+## religion_jewish    -0.3434334  0.1906644  -1.801 0.071664 .  
+## weight              0.0064989  0.0012064   5.387 7.17e-08 ***
+## HS_num_of_drinks    0.0063010  0.0006024  10.459  &lt; 2e-16 ***
+## dad_heavy_drinker   0.2919934  0.1111966   2.626 0.008642 ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 6408.8  on 5872  degrees of freedom
-## Residual deviance: 5128.1  on 5843  degrees of freedom
-## AIC: 5188.1
+## Residual deviance: 5131.2  on 5845  degrees of freedom
+## AIC: 5187.2
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
-<pre class="r"><code>odds_mean &lt;- exp(summary(model_stepwise)$coefficients)
-odds_lb &lt;- exp(-2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-odds_ub &lt;- exp(2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-probs_lb &lt;- odds_lb / (1 + odds_lb); probs_ub &lt;- odds_ub / (1 + odds_ub);
-probs_mean &lt;- odds_mean / (1 + odds_mean);
-knitr::kable(cbind.data.frame(&quot;Lower bound&quot; = probs_lb,
-                              &quot;Mean&quot; = probs_mean,
-                              &quot;Upper bound&quot; = probs_ub), format = &quot;latex&quot;, digits = 3)</code></pre>
-
+<pre class="r"><code>odds_mean&lt;- exp(summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_lb &lt;- exp(-1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_ub &lt;- exp(1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+sig_level &lt;- stars.pval(summary(model_stepwise)$coefficients[,4])
+xtable(cbind.data.frame(&quot;Lower bound&quot; = odds_lb, &quot;Mean&quot; = odds_mean, &quot;Upper bound&quot; = odds_ub,
+                        &quot;Significance level&quot; = sig_level))</code></pre>
+<pre><code>## % latex table generated in R 3.5.1 by xtable 1.8-3 package
+## % Mon Feb 17 20:44:37 2020
+## \begin{table}[ht]
+## \centering
+## \begin{tabular}{rrrrl}
+##   \hline
+##  &amp; Lower bound &amp; Mean &amp; Upper bound &amp; Significance level \\ 
+##   \hline
+## (Intercept) &amp; 0.01 &amp; 0.04 &amp; 0.10 &amp; *** \\ 
+##   age\_18\_20 &amp; 1.52 &amp; 1.89 &amp; 2.33 &amp; *** \\ 
+##   age\_21\_22 &amp; 1.25 &amp; 1.53 &amp; 1.89 &amp; *** \\ 
+##   off\_housing &amp; 1.07 &amp; 1.26 &amp; 1.49 &amp; ** \\ 
+##   roommate &amp; 1.03 &amp; 1.29 &amp; 1.63 &amp; * \\ 
+##   family\_roomate &amp; 0.51 &amp; 0.67 &amp; 0.89 &amp; ** \\ 
+##   greek &amp; 1.54 &amp; 1.82 &amp; 2.14 &amp; *** \\ 
+##   academic\_important &amp; 0.54 &amp; 0.74 &amp; 1.00 &amp; . \\ 
+##   religion\_important &amp; 0.66 &amp; 0.78 &amp; 0.93 &amp; ** \\ 
+##   school\_disc\_once &amp; 1.68 &amp; 2.00 &amp; 2.39 &amp; *** \\ 
+##   school\_disc\_mult &amp; 1.99 &amp; 2.36 &amp; 2.80 &amp; *** \\ 
+##   prohib\_medical &amp; 0.38 &amp; 0.53 &amp; 0.73 &amp; *** \\ 
+##   prohib\_religion &amp; 0.32 &amp; 0.47 &amp; 0.70 &amp; *** \\ 
+##   tobac &amp; 2.01 &amp; 2.31 &amp; 2.67 &amp; *** \\ 
+##   marijuana &amp; 1.57 &amp; 1.88 &amp; 2.25 &amp; *** \\ 
+##   hard\_drugs &amp; 1.05 &amp; 1.38 &amp; 1.81 &amp; * \\ 
+##   aa\_attendance &amp; 0.22 &amp; 0.45 &amp; 0.92 &amp; * \\ 
+##   happy &amp; 1.14 &amp; 1.50 &amp; 1.97 &amp; ** \\ 
+##   not\_happy &amp; 1.19 &amp; 2.01 &amp; 3.42 &amp; ** \\ 
+##   gpa &amp; 0.72 &amp; 0.81 &amp; 0.91 &amp; *** \\ 
+##   married &amp; 0.41 &amp; 0.64 &amp; 1.00 &amp; . \\ 
+##   white &amp; 1.33 &amp; 1.63 &amp; 2.01 &amp; *** \\ 
+##   native &amp; 0.82 &amp; 2.11 &amp; 5.44 &amp;   \\ 
+##   religion\_catholic &amp; 1.21 &amp; 1.40 &amp; 1.61 &amp; *** \\ 
+##   religion\_jewish &amp; 0.49 &amp; 0.71 &amp; 1.03 &amp; . \\ 
+##   weight &amp; 1.00 &amp; 1.01 &amp; 1.01 &amp; *** \\ 
+##   HS\_num\_of\_drinks &amp; 1.01 &amp; 1.01 &amp; 1.01 &amp; *** \\ 
+##   dad\_heavy\_drinker &amp; 1.08 &amp; 1.34 &amp; 1.67 &amp; ** \\ 
+##    \hline
+## \end{tabular}
+## \end{table}</code></pre>
 </div>
 <div id="females-1" class="section level1">
 <h1>2001, females</h1>
@@ -589,7 +632,10 @@ knitr::kable(cbind.data.frame(&quot;Lower bound&quot; = probs_lb,
 df = df[df$drinks_binary == 1,]
 df = df[df$gender == 1,]
 df$heavy_drinker = ifelse(df$num_of_drinks &gt;= 35, 1, 0)
-df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks))
+df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks, age_15_17,
+                                  on_housing, no_roommate, school_disc_never,
+                                  somewhat_happy, single, religion_none, max_parent_edu_DK,
+                                  other, relationship))
 
 des_mat = model.matrix(lm(heavy_drinker ~ ., data = df_ref))
 des_mat &lt;- des_mat[, -1]
@@ -602,69 +648,108 @@ save(model_stepwise, file=&quot;model_stepwise_female_2001.rdata&quot;)
 summary(model_stepwise)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = heavy_drinker ~ age_18_20 + age_21_22 + no_roommate + 
-##     weird_roomate + greek + religion_important + prohib_medical + 
-##     prohib_religion + tobac + marijuana + hard_drugs + aa_attendance + 
-##     married + hispanic + white + black + other + religion_catholic + 
-##     weight + height + HS_num_of_drinks + dad_heavy_drinker + 
-##     max_parent_edu_DK + max_parent_edu_HS + school_prohibs + 
-##     school_disc_never + school_disc_once + school_disc_mult, 
-##     family = &quot;binomial&quot;, data = des_mat)
+## glm(formula = heavy_drinker ~ age_23up + roommate + weird_roomate + 
+##     greek + religion_important + prohib_medical + prohib_religion + 
+##     tobac + marijuana + hard_drugs + aa_attendance + married + 
+##     hispanic + black + asian + native + religion_catholic + weight + 
+##     height + HS_num_of_drinks + dad_heavy_drinker + max_parent_edu_someHS + 
+##     max_parent_edu_HS + max_parent_edu_someCol + max_parent_edu_col + 
+##     school_prohibs + school_disc_once + school_disc_mult, family = &quot;binomial&quot;, 
+##     data = des_mat)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.5727  -0.7667  -0.5060   0.8547   2.7629  
+## -2.5688  -0.7656  -0.5110   0.8523   2.7801  
 ## 
 ## Coefficients:
-##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)        -1.727e+01  1.517e+02  -0.114 0.909354    
-## age_18_20           2.094e-01  1.060e-01   1.977 0.048089 *  
-## age_21_22           1.947e-01  1.091e-01   1.785 0.074319 .  
-## no_roommate        -2.711e-01  9.653e-02  -2.808 0.004981 ** 
-## weird_roomate      -6.381e-01  8.687e-02  -7.346 2.04e-13 ***
-## greek               5.363e-01  8.877e-02   6.042 1.53e-09 ***
-## religion_important -1.246e-01  7.046e-02  -1.769 0.076905 .  
-## prohib_medical     -4.310e-01  1.198e-01  -3.598 0.000321 ***
-## prohib_religion    -4.827e-01  6.701e-02  -7.203 5.88e-13 ***
-## tobac               9.600e-01  6.981e-02  13.751  &lt; 2e-16 ***
-## marijuana           6.538e-01  8.397e-02   7.786 6.91e-15 ***
-## hard_drugs          3.010e-01  1.046e-01   2.876 0.004022 ** 
-## aa_attendance       3.990e-01  1.954e-01   2.042 0.041145 *  
-## married            -6.441e-01  2.073e-01  -3.107 0.001888 ** 
-## hispanic            3.381e-01  1.891e-01   1.788 0.073749 .  
-## white               7.380e-01  1.461e-01   5.053 4.34e-07 ***
-## black               3.032e-01  2.072e-01   1.463 0.143383    
-## other               7.647e-01  2.395e-01   3.193 0.001407 ** 
-## religion_catholic   2.886e-01  6.613e-02   4.365 1.27e-05 ***
-## weight             -3.973e-03  1.535e-03  -2.589 0.009617 ** 
-## height              2.227e-02  1.389e-02   1.604 0.108812    
-## HS_num_of_drinks    4.892e-03  6.533e-04   7.488 7.01e-14 ***
-## dad_heavy_drinker  -1.647e-01  1.021e-01  -1.613 0.106783    
-## max_parent_edu_DK   1.124e+00  4.923e-01   2.282 0.022482 *  
-## max_parent_edu_HS   1.535e-01  9.810e-02   1.565 0.117664    
-## school_prohibs      2.762e-01  8.396e-02   3.289 0.001004 ** 
-## school_disc_never   1.414e+01  1.517e+02   0.093 0.925752    
-## school_disc_once    1.466e+01  1.517e+02   0.097 0.923021    
-## school_disc_mult    1.508e+01  1.517e+02   0.099 0.920828    
+##                         Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)            -1.366035   0.984830  -1.387 0.165418    
+## age_23up               -0.199358   0.102692  -1.941 0.052219 .  
+## roommate                0.236282   0.093552   2.526 0.011547 *  
+## weird_roomate          -0.411003   0.109724  -3.746 0.000180 ***
+## greek                   0.542023   0.088557   6.121 9.32e-10 ***
+## religion_important     -0.118590   0.070378  -1.685 0.091982 .  
+## prohib_medical         -0.436165   0.119675  -3.645 0.000268 ***
+## prohib_religion        -0.491746   0.066806  -7.361 1.83e-13 ***
+## tobac                   0.968270   0.069732  13.886  &lt; 2e-16 ***
+## marijuana               0.653871   0.083928   7.791 6.66e-15 ***
+## hard_drugs              0.302250   0.104685   2.887 0.003886 ** 
+## aa_attendance           0.375926   0.195002   1.928 0.053880 .  
+## married                -0.652716   0.206698  -3.158 0.001590 ** 
+## hispanic               -0.414929   0.132159  -3.140 0.001692 ** 
+## black                  -0.417439   0.157821  -2.645 0.008169 ** 
+## asian                  -0.702285   0.156071  -4.500 6.80e-06 ***
+## native                 -1.193244   0.564738  -2.113 0.034608 *  
+## religion_catholic       0.295356   0.066006   4.475 7.65e-06 ***
+## weight                 -0.003917   0.001535  -2.551 0.010737 *  
+## height                  0.021778   0.013907   1.566 0.117341    
+## HS_num_of_drinks        0.004885   0.000651   7.503 6.24e-14 ***
+## dad_heavy_drinker      -0.167464   0.102183  -1.639 0.101241    
+## max_parent_edu_someHS  -0.985929   0.527952  -1.867 0.061837 .  
+## max_parent_edu_HS      -0.909693   0.487154  -1.867 0.061851 .  
+## max_parent_edu_someCol -1.123134   0.483067  -2.325 0.020072 *  
+## max_parent_edu_col     -1.037120   0.481131  -2.156 0.031116 *  
+## school_prohibs          0.272084   0.083828   3.246 0.001171 ** 
+## school_disc_once        0.545348   0.206376   2.642 0.008230 ** 
+## school_disc_mult        0.954540   0.179667   5.313 1.08e-07 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 7467.7  on 6106  degrees of freedom
-## Residual deviance: 6120.3  on 6078  degrees of freedom
-## AIC: 6178.3
+## Residual deviance: 6154.1  on 6078  degrees of freedom
+## AIC: 6212.1
 ## 
-## Number of Fisher Scoring iterations: 14</code></pre>
-<pre class="r"><code>odds_mean &lt;- exp(summary(model_stepwise)$coefficients)
-odds_lb &lt;- exp(-2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-odds_ub &lt;- exp(2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-probs_lb &lt;- odds_lb / (1 + odds_lb); probs_ub &lt;- odds_ub / (1 + odds_ub);
-probs_mean &lt;- odds_mean / (1 + odds_mean);
-knitr::kable(cbind.data.frame(&quot;Lower bound&quot; = probs_lb,
-                              &quot;Mean&quot; = probs_mean,
-                              &quot;Upper bound&quot; = probs_ub), format = &quot;latex&quot;, digits = 3)</code></pre>
-
+## Number of Fisher Scoring iterations: 5</code></pre>
+<pre class="r"><code>odds_mean&lt;- exp(summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_lb &lt;- exp(-1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_ub &lt;- exp(1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+sig_level &lt;- stars.pval(summary(model_stepwise)$coefficients[,4])
+xtable(cbind.data.frame(&quot;Lower bound&quot; = odds_lb, &quot;Mean&quot; = odds_mean, &quot;Upper bound&quot; = odds_ub,
+                        &quot;Significance level&quot; = sig_level))</code></pre>
+<pre><code>## % latex table generated in R 3.5.1 by xtable 1.8-3 package
+## % Mon Feb 17 20:45:14 2020
+## \begin{table}[ht]
+## \centering
+## \begin{tabular}{rrrrl}
+##   \hline
+##  &amp; Lower bound &amp; Mean &amp; Upper bound &amp; Significance level \\ 
+##   \hline
+## (Intercept) &amp; 0.04 &amp; 0.26 &amp; 1.76 &amp;   \\ 
+##   age\_23up &amp; 0.67 &amp; 0.82 &amp; 1.00 &amp; . \\ 
+##   roommate &amp; 1.05 &amp; 1.27 &amp; 1.52 &amp; * \\ 
+##   weird\_roomate &amp; 0.53 &amp; 0.66 &amp; 0.82 &amp; *** \\ 
+##   greek &amp; 1.45 &amp; 1.72 &amp; 2.05 &amp; *** \\ 
+##   religion\_important &amp; 0.77 &amp; 0.89 &amp; 1.02 &amp; . \\ 
+##   prohib\_medical &amp; 0.51 &amp; 0.65 &amp; 0.82 &amp; *** \\ 
+##   prohib\_religion &amp; 0.54 &amp; 0.61 &amp; 0.70 &amp; *** \\ 
+##   tobac &amp; 2.30 &amp; 2.63 &amp; 3.02 &amp; *** \\ 
+##   marijuana &amp; 1.63 &amp; 1.92 &amp; 2.27 &amp; *** \\ 
+##   hard\_drugs &amp; 1.10 &amp; 1.35 &amp; 1.66 &amp; ** \\ 
+##   aa\_attendance &amp; 0.99 &amp; 1.46 &amp; 2.13 &amp; . \\ 
+##   married &amp; 0.35 &amp; 0.52 &amp; 0.78 &amp; ** \\ 
+##   hispanic &amp; 0.51 &amp; 0.66 &amp; 0.86 &amp; ** \\ 
+##   black &amp; 0.48 &amp; 0.66 &amp; 0.90 &amp; ** \\ 
+##   asian &amp; 0.36 &amp; 0.50 &amp; 0.67 &amp; *** \\ 
+##   native &amp; 0.10 &amp; 0.30 &amp; 0.92 &amp; * \\ 
+##   religion\_catholic &amp; 1.18 &amp; 1.34 &amp; 1.53 &amp; *** \\ 
+##   weight &amp; 0.99 &amp; 1.00 &amp; 1.00 &amp; * \\ 
+##   height &amp; 0.99 &amp; 1.02 &amp; 1.05 &amp;   \\ 
+##   HS\_num\_of\_drinks &amp; 1.00 &amp; 1.00 &amp; 1.01 &amp; *** \\ 
+##   dad\_heavy\_drinker &amp; 0.69 &amp; 0.85 &amp; 1.03 &amp;   \\ 
+##   max\_parent\_edu\_someHS &amp; 0.13 &amp; 0.37 &amp; 1.05 &amp; . \\ 
+##   max\_parent\_edu\_HS &amp; 0.15 &amp; 0.40 &amp; 1.05 &amp; . \\ 
+##   max\_parent\_edu\_someCol &amp; 0.13 &amp; 0.33 &amp; 0.84 &amp; * \\ 
+##   max\_parent\_edu\_col &amp; 0.14 &amp; 0.35 &amp; 0.91 &amp; * \\ 
+##   school\_prohibs &amp; 1.11 &amp; 1.31 &amp; 1.55 &amp; ** \\ 
+##   school\_disc\_once &amp; 1.15 &amp; 1.73 &amp; 2.59 &amp; ** \\ 
+##   school\_disc\_mult &amp; 1.83 &amp; 2.60 &amp; 3.69 &amp; *** \\ 
+##    \hline
+## \end{tabular}
+## \end{table}</code></pre>
 </div>
 <div id="males-1" class="section level1">
 <h1>2001, males</h1>
@@ -672,7 +757,10 @@ knitr::kable(cbind.data.frame(&quot;Lower bound&quot; = probs_lb,
 df = df[df$drinks_binary == 1,]
 df = df[df$gender == 0,]
 df$heavy_drinker = ifelse(df$num_of_drinks &gt;= 65, 1, 0)
-df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks))
+df_ref &lt;- df %&gt;% dplyr::select(-c(drinks_binary, gender, num_of_drinks, age_15_17,
+                                  on_housing, no_roommate, school_disc_never,
+                                  somewhat_happy, single, religion_none, max_parent_edu_DK,
+                                  other, relationship))
 
 des_mat = model.matrix(lm(heavy_drinker ~ ., data = df_ref))
 des_mat &lt;- des_mat[, -1]
@@ -685,69 +773,110 @@ save(model_stepwise, file=&quot;model_stepwise_male_2001.rdata&quot;)
 summary(model_stepwise)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = heavy_drinker ~ age_18_20 + age_21_22 + subfree_on_housing + 
-##     on_housing + no_roommate + weird_roomate + greek + academic_important + 
+## glm(formula = heavy_drinker ~ age_23up + subfree_on_housing + 
+##     off_housing + roommate + weird_roomate + greek + academic_important + 
 ##     prohib_medical + prohib_religion + tobac + marijuana + hard_drugs + 
-##     aa_attendance + happy + gpa + single + hispanic + white + 
-##     black + asian + other + religion_none + religion_catholic + 
-##     weight + HS_num_of_drinks + max_parent_edu_DK + school_prohibs + 
-##     school_disc_mult, family = &quot;binomial&quot;, data = des_mat)
+##     aa_attendance + happy + gpa + married + hispanic + black + 
+##     asian + native + religion_catholic + weight + HS_num_of_drinks + 
+##     max_parent_edu_someHS + max_parent_edu_HS + max_parent_edu_someCol + 
+##     max_parent_edu_col + school_prohibs + school_disc_mult, family = &quot;binomial&quot;, 
+##     data = des_mat)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.9402  -0.6935  -0.4565   0.5043   2.7153  
+## -2.9638  -0.6917  -0.4571   0.5206   2.7356  
 ## 
 ## Coefficients:
-##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)        -2.0776961  0.6969940  -2.981 0.002874 ** 
-## age_18_20           0.3066317  0.1444975   2.122 0.033833 *  
-## age_21_22           0.2045189  0.1366609   1.497 0.134512    
-## subfree_on_housing -0.5203831  0.1538932  -3.381 0.000721 ***
-## on_housing         -0.2699267  0.1247503  -2.164 0.030485 *  
-## no_roommate        -0.3295213  0.1404607  -2.346 0.018976 *  
-## weird_roomate      -0.7792075  0.1347106  -5.784 7.28e-09 ***
-## greek               0.4878672  0.1224637   3.984 6.78e-05 ***
-## academic_important -0.6493463  0.1793433  -3.621 0.000294 ***
-## prohib_medical     -0.5534806  0.1934542  -2.861 0.004223 ** 
-## prohib_religion    -0.5368592  0.1073648  -5.000 5.72e-07 ***
-## tobac               0.6068578  0.0955832   6.349 2.17e-10 ***
-## marijuana           0.4863241  0.1121783   4.335 1.46e-05 ***
-## hard_drugs          0.6839448  0.1298911   5.266 1.40e-07 ***
-## aa_attendance       0.5127539  0.2003909   2.559 0.010504 *  
-## happy               0.4440808  0.1624730   2.733 0.006271 ** 
-## gpa                -0.1985214  0.0808206  -2.456 0.014037 *  
-## single              0.4372541  0.2332083   1.875 0.060800 .  
-## hispanic           -1.4549414  0.4678190  -3.110 0.001871 ** 
-## white              -1.1012839  0.4370792  -2.520 0.011747 *  
-## black              -1.7638854  0.4974520  -3.546 0.000391 ***
-## asian              -1.6909898  0.4814851  -3.512 0.000445 ***
-## other              -1.4362788  0.5135820  -2.797 0.005164 ** 
-## religion_none      -0.2756897  0.1417907  -1.944 0.051854 .  
-## religion_catholic   0.2206893  0.1007212   2.191 0.028445 *  
-## weight              0.0103040  0.0021322   4.833 1.35e-06 ***
-## HS_num_of_drinks    0.0064622  0.0007751   8.337  &lt; 2e-16 ***
-## max_parent_edu_DK   1.1932636  0.5121035   2.330 0.019800 *  
-## school_prohibs      0.2053989  0.1307994   1.570 0.116337    
-## school_disc_mult    1.2671093  0.1730261   7.323 2.42e-13 ***
+##                          Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)            -1.9893432  0.7384694  -2.694 0.007063 ** 
+## age_23up               -0.3053797  0.1272219  -2.400 0.016379 *  
+## subfree_on_housing     -0.2478091  0.1569133  -1.579 0.114273    
+## off_housing             0.2316672  0.1181779   1.960 0.049958 *  
+## roommate                0.2734314  0.1355478   2.017 0.043671 *  
+## weird_roomate          -0.5179924  0.1684699  -3.075 0.002107 ** 
+## greek                   0.5182297  0.1218500   4.253 2.11e-05 ***
+## academic_important     -0.6374990  0.1781339  -3.579 0.000345 ***
+## prohib_medical         -0.5351356  0.1924768  -2.780 0.005432 ** 
+## prohib_religion        -0.5377259  0.1070953  -5.021 5.14e-07 ***
+## tobac                   0.6151312  0.0952764   6.456 1.07e-10 ***
+## marijuana               0.4609482  0.1114933   4.134 3.56e-05 ***
+## hard_drugs              0.6843291  0.1294418   5.287 1.24e-07 ***
+## aa_attendance           0.5192404  0.1992924   2.605 0.009176 ** 
+## happy                   0.4542026  0.1627573   2.791 0.005260 ** 
+## gpa                    -0.1993070  0.0805751  -2.474 0.013378 *  
+## married                -0.4507983  0.2936899  -1.535 0.124797    
+## hispanic               -0.3964806  0.1866939  -2.124 0.033696 *  
+## black                  -0.6992859  0.2652586  -2.636 0.008383 ** 
+## asian                  -0.6235252  0.2264077  -2.754 0.005887 ** 
+## native                  1.1147950  0.7240836   1.540 0.123659    
+## religion_catholic       0.2922911  0.0940637   3.107 0.001888 ** 
+## weight                  0.0102812  0.0021247   4.839 1.31e-06 ***
+## HS_num_of_drinks        0.0063167  0.0007721   8.181 2.81e-16 ***
+## max_parent_edu_someHS  -1.0068118  0.5882620  -1.712 0.086988 .  
+## max_parent_edu_HS      -1.0215585  0.5306597  -1.925 0.054220 .  
+## max_parent_edu_someCol -1.0066444  0.5196071  -1.937 0.052706 .  
+## max_parent_edu_col     -1.1383227  0.5159488  -2.206 0.027365 *  
+## school_prohibs          0.1975350  0.1303489   1.515 0.129663    
+## school_disc_mult        1.2599882  0.1714640   7.348 2.01e-13 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 3835.3  on 3342  degrees of freedom
-## Residual deviance: 3038.0  on 3313  degrees of freedom
-## AIC: 3098
+## Residual deviance: 3048.4  on 3313  degrees of freedom
+## AIC: 3108.4
 ## 
 ## Number of Fisher Scoring iterations: 5</code></pre>
-<pre class="r"><code>odds_mean &lt;- exp(summary(model_stepwise)$coefficients)
-odds_lb &lt;- exp(-2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-odds_ub &lt;- exp(2 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;])
-probs_lb &lt;- odds_lb / (1 + odds_lb); probs_ub &lt;- odds_ub / (1 + odds_ub);
-probs_mean &lt;- odds_mean / (1 + odds_mean);
-knitr::kable(cbind.data.frame(&quot;Lower bound&quot; = probs_lb,
-                              &quot;Mean&quot; = probs_mean,
-                              &quot;Upper bound&quot; = probs_ub), format = &quot;latex&quot;, digits = 3)</code></pre>
-
+<pre class="r"><code>odds_mean&lt;- exp(summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_lb &lt;- exp(-1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+odds_ub &lt;- exp(1.96 * summary(model_stepwise)$coefficients[, &quot;Std. Error&quot;] +
+                 summary(model_stepwise)$coefficients[, &quot;Estimate&quot;])
+sig_level &lt;- stars.pval(summary(model_stepwise)$coefficients[,4])
+xtable(cbind.data.frame(&quot;Lower bound&quot; = odds_lb, &quot;Mean&quot; = odds_mean, &quot;Upper bound&quot; = odds_ub,
+                        &quot;Significance level&quot; = sig_level))</code></pre>
+<pre><code>## % latex table generated in R 3.5.1 by xtable 1.8-3 package
+## % Mon Feb 17 20:45:33 2020
+## \begin{table}[ht]
+## \centering
+## \begin{tabular}{rrrrl}
+##   \hline
+##  &amp; Lower bound &amp; Mean &amp; Upper bound &amp; Significance level \\ 
+##   \hline
+## (Intercept) &amp; 0.03 &amp; 0.14 &amp; 0.58 &amp; ** \\ 
+##   age\_23up &amp; 0.57 &amp; 0.74 &amp; 0.95 &amp; * \\ 
+##   subfree\_on\_housing &amp; 0.57 &amp; 0.78 &amp; 1.06 &amp;   \\ 
+##   off\_housing &amp; 1.00 &amp; 1.26 &amp; 1.59 &amp; * \\ 
+##   roommate &amp; 1.01 &amp; 1.31 &amp; 1.71 &amp; * \\ 
+##   weird\_roomate &amp; 0.43 &amp; 0.60 &amp; 0.83 &amp; ** \\ 
+##   greek &amp; 1.32 &amp; 1.68 &amp; 2.13 &amp; *** \\ 
+##   academic\_important &amp; 0.37 &amp; 0.53 &amp; 0.75 &amp; *** \\ 
+##   prohib\_medical &amp; 0.40 &amp; 0.59 &amp; 0.85 &amp; ** \\ 
+##   prohib\_religion &amp; 0.47 &amp; 0.58 &amp; 0.72 &amp; *** \\ 
+##   tobac &amp; 1.53 &amp; 1.85 &amp; 2.23 &amp; *** \\ 
+##   marijuana &amp; 1.27 &amp; 1.59 &amp; 1.97 &amp; *** \\ 
+##   hard\_drugs &amp; 1.54 &amp; 1.98 &amp; 2.55 &amp; *** \\ 
+##   aa\_attendance &amp; 1.14 &amp; 1.68 &amp; 2.48 &amp; ** \\ 
+##   happy &amp; 1.14 &amp; 1.57 &amp; 2.17 &amp; ** \\ 
+##   gpa &amp; 0.70 &amp; 0.82 &amp; 0.96 &amp; * \\ 
+##   married &amp; 0.36 &amp; 0.64 &amp; 1.13 &amp;   \\ 
+##   hispanic &amp; 0.47 &amp; 0.67 &amp; 0.97 &amp; * \\ 
+##   black &amp; 0.30 &amp; 0.50 &amp; 0.84 &amp; ** \\ 
+##   asian &amp; 0.34 &amp; 0.54 &amp; 0.84 &amp; ** \\ 
+##   native &amp; 0.74 &amp; 3.05 &amp; 12.60 &amp;   \\ 
+##   religion\_catholic &amp; 1.11 &amp; 1.34 &amp; 1.61 &amp; ** \\ 
+##   weight &amp; 1.01 &amp; 1.01 &amp; 1.01 &amp; *** \\ 
+##   HS\_num\_of\_drinks &amp; 1.00 &amp; 1.01 &amp; 1.01 &amp; *** \\ 
+##   max\_parent\_edu\_someHS &amp; 0.12 &amp; 0.37 &amp; 1.16 &amp; . \\ 
+##   max\_parent\_edu\_HS &amp; 0.13 &amp; 0.36 &amp; 1.02 &amp; . \\ 
+##   max\_parent\_edu\_someCol &amp; 0.13 &amp; 0.37 &amp; 1.01 &amp; . \\ 
+##   max\_parent\_edu\_col &amp; 0.12 &amp; 0.32 &amp; 0.88 &amp; * \\ 
+##   school\_prohibs &amp; 0.94 &amp; 1.22 &amp; 1.57 &amp;   \\ 
+##   school\_disc\_mult &amp; 2.52 &amp; 3.53 &amp; 4.93 &amp; *** \\ 
+##    \hline
+## \end{tabular}
+## \end{table}</code></pre>
 </div>
 
 
